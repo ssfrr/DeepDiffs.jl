@@ -23,6 +23,7 @@ end
 StructureDiff(obj1, obj2) = StructureDiff((obj1, obj2), structdiff(obj1, obj2)...)
 
 include("arrays.jl")
+include("dicts.jl")
 include("display.jl")
 
 end # module
