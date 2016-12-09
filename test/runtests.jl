@@ -1,5 +1,7 @@
 using StructureDiffs
 using Base.Test
+using TestSetExtensions
 
-# write your own tests here
-@test 1 == 2
+@testset DottedTestSet "StructureDiffs Tests" begin
+    @includetests ARGS
+end
