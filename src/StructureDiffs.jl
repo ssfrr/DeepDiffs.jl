@@ -13,14 +13,16 @@ arrays, the edits will be array indices. If they are dicts it will be keys.
 """
 function structdiff end
 
-type StructureDiff
-    orig # tuple of original data structures
-    added
-    removed
+# parametrized on object type and element type
+type StructureDiff{T, ET}
+    orig::Tuple{T, T} # tuple of original data structures
+    removed::Vector{ET}
+    added::Vector{ET}
 end
 
-StructureDiff(obj1, obj2) = StructureDiff((obj1, obj2), sdiff(obj1, obj2)...)
+StructureDiff(obj1, obj2) = StructureDiff((obj1, obj2), structdiff(obj1, obj2)...)
 
 include("arrays.jl")
+include("display.jl")
 
 end # module

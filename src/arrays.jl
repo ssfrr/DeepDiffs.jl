@@ -17,8 +17,8 @@ function structdiff{T <: Union{Vector, String}}(X::T, Y::T)
         end
     end
 
-    removed = []
-    added = []
+    removed = Int[]
+    added = Int[]
     backtrack(lengths, removed, added, X, Y, length(X), length(Y))
 
     (removed, added)
