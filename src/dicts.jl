@@ -1,4 +1,4 @@
-function structdiff(X::Dict, Y::Dict)
+function deepdiff(X::Dict, Y::Dict)
     xkeys = Set(keys(X))
     ykeys = Set(keys(Y))
 
@@ -24,7 +24,7 @@ function outputlines(obj)
     split(takebuf_string(buf))
 end
 
-function Base.show{T<:Dict, ET}(io::IO, diff::StructureDiff{T, ET})
+function Base.show{T<:Dict, ET}(io::IO, diff::DeepDiff{T, ET})
     leftout = outputlines(diff.orig[1])
     rightout = outputlines(diff.orig[2])
 

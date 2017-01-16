@@ -1,7 +1,7 @@
-using StructureDiffs
+using DeepDiffs
 using Base.Test
 using TestSetExtensions
 
-@testset DottedTestSet "StructureDiffs Tests" begin
+@testset DottedTestSet "DeepDiff Tests" begin
     @includetests ARGS
 end

@@ -9,7 +9,7 @@
     )
 
     # one changed
-    @test structdiff(d1, Dict(
+    @test deepdiff(d1, Dict(
         :foo => "foo",
         :bar => "biz",
         :baz => Dict(
@@ -19,7 +19,7 @@
     )) == (Set([:bar]), Set([:bar]))
 
     # one removed
-    @test structdiff(d1, Dict(
+    @test deepdiff(d1, Dict(
         :foo => "foo",
         :baz => Dict(
             :fizz => "fizz",
@@ -28,7 +28,7 @@
     )) == (Set([:bar]), Set([]))
 
     # one added
-    @test structdiff(d1, Dict(
+    @test deepdiff(d1, Dict(
         :foo => "foo",
         :bar => "bar",
         :biz => "biz",
@@ -39,7 +39,7 @@
     )) == (Set([]), Set([:biz]))
 
     # inner dict modified
-    @test structdiff(d1, Dict(
+    @test deepdiff(d1, Dict(
         :foo => "foo",
         :bar => "bar",
         :baz => Dict(
@@ -49,8 +49,8 @@
     )) == (Set([:baz]), Set([:baz]))
 
     # totally removed
-    @test structdiff(d1, Dict()) == (Set([:foo, :bar, :baz]), Set([]))
+    @test deepdiff(d1, Dict()) == (Set([:foo, :bar, :baz]), Set([]))
 
     # totally added
-    @test structdiff(Dict(), d1) == (Set([]), Set([:foo, :bar, :baz]))
+    @test deepdiff(Dict(), d1) == (Set([]), Set([:foo, :bar, :baz]))
 end

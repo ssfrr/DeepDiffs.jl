@@ -1,5 +1,5 @@
 @testset "Array diffs print correctly" begin
-    d = StructureDiff([1, 2, 7, 3], [2, 3, 4, 1, 2, 3, 5])
+    d = DeepDiff([1, 2, 7, 3], [2, 3, 4, 1, 2, 3, 5])
     buf = IOBuffer()
     display(TextDisplay(buf), d)
     @test takebuf_string(buf) == """

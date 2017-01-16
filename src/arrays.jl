@@ -1,6 +1,6 @@
 # diffing an array is an application of the Longest Common Subsequence problem:
 # https://en.wikipedia.org/wiki/Longest_common_subsequence_problem
-function structdiff{T <: Union{Vector, String}}(X::T, Y::T)
+function deepdiff{T <: Union{Vector, String}}(X::T, Y::T)
     # we're going to solve with dynamic programming, so let's first pre-allocate
     # our result array, which will store possible lengths of the common
     # substrings.
@@ -38,7 +38,7 @@ function backtrack(lengths, removed, added, X, Y, i, j)
     end
 end
 
-function Base.show{T<:Array, ET}(io::IO, diff::StructureDiff{T, ET})
+function Base.show{T<:Array, ET}(io::IO, diff::DeepDiff{T, ET})
     from = diff.orig[1]
     to = diff.orig[2]
 
