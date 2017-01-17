@@ -54,37 +54,41 @@ end
 function Base.show(io::IO, diff::VectorDiff)
     from = before(diff)
     to = after(diff)
+    rem = removed(diff)
+    add = added(diff)
 
     ifrom = 1
-    iremoved = 1
-    print(io, "[")
-    while ifrom < length(from)
-        printitem(io, :red, from, ifrom, removed(diff), iremoved) && (iremoved += 1)
-        print(io, ", ")
-        ifrom += 1
-    end
-    printitem(io, :red, from, ifrom, removed(diff), iremoved) && (iremoved += 1)
-    println(io, "]")
-
     ito = 1
+    iremoved = 1
     iadded = 1
+
     print(io, "[")
-    while ito < length(to)
-        printitem(io, :green, to, ito, added(diff), iadded) && (iadded += 1)
-        print(io, ", ")
-        ito += 1
+    while ifrom <= length(from) || ito <= length(to)
+        if iremoved <= length(rem) && ifrom == rem[iremoved]
+            printitem(io, from[ifrom], :red, "(-)")
+            (ito < length(to) || ifrom < length(from)) && print_with_color(:red, io, ", ")
+            ifrom += 1
+            iremoved += 1
+        elseif iadded <= length(add) && ito == add[iadded]
+            printitem(io, to[ito], :green, "(+)")
+            (ito < length(to) || ifrom < length(from)) && print_with_color(:green, io, ", ")
+            ito += 1
+            iadded += 1
+        else
+            # not removed or added, must be in both
+            printitem(io, from[ifrom])
+            (ito < length(to) || ifrom < length(from)) && print(io, ", ")
+            ifrom += 1
+            ito += 1
+        end
     end
-    printitem(io, :green, to, ito, added(diff), iadded) && (iadded += 1)
     println(io, "]")
 end
 
-# returns true if the item matched
-function printitem(io, color, data, dataidx, match, matchidx)
-    if matchidx > length(match) || dataidx != match[matchidx]
-        print(io, data[dataidx])
-        false
+function printitem(io, v, color=:normal, prefix="")
+    if(Base.have_color)
+        print_with_color(color, io, string(v))
     else
-        print_with_color(color, io, string(data[dataidx]))
-        true
+        print(io, prefix, v)
     end
 end

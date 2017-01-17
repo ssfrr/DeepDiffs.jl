@@ -38,10 +38,10 @@ function outputlines(obj)
 end
 
 function Base.show(io::IO, diff::DictDiff)
-    leftout = outputlines(before(diff))
-    rightout = outputlines(after(diff))
-
-    leftwidth = maximum(map(length, leftout))
+    # leftout = outputlines(before(diff))
+    # rightout = outputlines(after(diff))
+    #
+    # leftwidth = maximum(map(length, leftout))
 end
 
 # function highlightprint(io, d::Dict, match, color)
@@ -51,9 +51,10 @@ end
 #             print_with_color(color, io, )
 # end
 
-function prettyprint(io, d::Dict, indent=0)
+function diffprint(io, d::Dict, addedkeys, removedkeys, changedkeys, indent=0)
     println(typeof(d), "(")
-    for k in keys(d)
+    allkeys = [keys(d); addedkeys; removedkeys; changedkeys] |> unique |> sort
+    for k in allkeys
         print("  " ^ (indent+1))
         show(k)
         print(" => ")
@@ -63,4 +64,5 @@ function prettyprint(io, d::Dict, indent=0)
     print("  " ^ indent, ")")
 end
 
-prettyprint(io, x, indent=0) = show(io, x)
+# fallback for non-dicts
+diffprint(io, x, addedkeys, removedkeys, changedkeys, indent=0) = show(io, x)
