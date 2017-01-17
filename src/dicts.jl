@@ -13,6 +13,17 @@ removed(diff::DictDiff) = diff.removed
 added(diff::DictDiff) = diff.added
 changed(diff::DictDiff) = diff.changed
 
+function ==(lhs::DictDiff, rhs::DictDiff)
+    lhs.before == rhs.before || return false
+    lhs.after == rhs.after || return false
+    lhs.removed == rhs.removed || return false
+    lhs.added == rhs.added || return false
+    lhs.changed == rhs.changed || return false
+    lhs.unchanged == rhs.unchanged || return false
+
+    true
+end
+
 function deepdiff(X::Associative, Y::Associative)
     xkeys = Set(keys(X))
     ykeys = Set(keys(Y))
@@ -40,57 +51,57 @@ function diffprint(io, d::DictDiff, indent=0)
     bef = before(d)
     aft = after(d)
 
-    println(io, typeof(d), "(")
+    println(io, "Dict(")
     for k in d.unchanged
         # extra space to account for added linemarker
         print(io, " ", "  " ^ (indent+1))
         prettyprint(io, Pair(k, bef[k]), " ", indent+1)
-        println(io)
+        println(io, ",")
     end
     # TODO: use `with_output_color` in 0.6 to make this cleaner
-    Base.have_color && print(Base.text_colors[:red])
+    Base.have_color && print(io, Base.text_colors[:red])
     for k in removed(d)
         print(io, "-", "  " ^ (indent+1))
         prettyprint(io, Pair(k, bef[k]), "-", indent+1)
-        println(io)
+        println(io, ",")
     end
-    Base.have_color && print(Base.text_colors[:normal])
+    Base.have_color && print(io, Base.text_colors[:normal])
     for (k, v) in changed(d)
         if isa(v, SimpleDiff)
             # if we have a key pointing to a SimpleDiff, then we don't know how to
             # deconstruct the value, so instead we print it like a removed and added key
-            Base.have_color && print(Base.text_colors[:red])
+            Base.have_color && print(io, Base.text_colors[:red])
             print(io, "-", "  " ^ (indent+1))
             prettyprint(io, Pair(k, before(v)), "-", indent+1)
-            println(io)
-            Base.have_color && print(Base.text_colors[:green])
+            println(io, ",")
+            Base.have_color && print(io, Base.text_colors[:green])
             print(io, "+", "  " ^ (indent+1))
             prettyprint(io, Pair(k, after(v)), "+", indent+1)
-            println(io)
-            Base.have_color && print(Base.text_colors[:normal])
+            println(io, ",")
+            Base.have_color && print(io, Base.text_colors[:normal])
         else
             # extra space to account for added linemarker
             print(io, " ", "  " ^ (indent+1))
             prettyprint(io, Pair(k, v), " ", indent+1)
-            println(io)
+            println(io, ",")
         end
     end
-    Base.have_color && print(Base.text_colors[:green])
+    Base.have_color && print(io, Base.text_colors[:green])
     for k in added(d)
         print(io, "+", "  " ^ (indent+1))
         prettyprint(io, Pair(k, aft[k]), "+", indent+1)
-        println(io)
+        println(io, ",")
     end
-    Base.have_color && print(Base.text_colors[:normal])
+    Base.have_color && print(io, Base.text_colors[:normal])
     print(io, " ", "  " ^ indent, ")")
 end
 
 function prettyprint(io, d::Associative, linemarker, indent)
-    println(io, typeof(d), "(")
+    println(io, "Dict(")
     for p in d
         print(io, linemarker, "  " ^ (indent+1))
         prettyprint(io, p, linemarker, indent+1)
-        println()
+        println(io, ",")
     end
     print(io, linemarker, "  " ^ indent, ")")
 end

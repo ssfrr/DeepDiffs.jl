@@ -20,6 +20,9 @@ type SimpleDiff{T1, T2} <: DeepDiff
     after::T2
 end
 
+import Base: ==
+==(lhs::SimpleDiff, rhs::SimpleDiff) = lhs.before == rhs.before && lhs.after == rhs.after
+
 before(d::SimpleDiff) = d.before
 after(d::SimpleDiff) = d.after
 
