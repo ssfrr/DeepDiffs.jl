@@ -1,6 +1,19 @@
+type VectorDiff{T1, T2} <: DeepDiff
+    before::T1
+    after::T2
+    removed::Vector{Int}
+    added::Vector{Int}
+end
+
+before(diff::VectorDiff) = diff.before
+after(diff::VectorDiff) = diff.after
+removed(diff::VectorDiff) = diff.removed
+added(diff::VectorDiff) = diff.added
+changed(diff::VectorDiff) = Int[]
+
 # diffing an array is an application of the Longest Common Subsequence problem:
 # https://en.wikipedia.org/wiki/Longest_common_subsequence_problem
-function deepdiff{T <: Union{Vector, String}}(X::T, Y::T)
+function deepdiff(X::Union{Vector, String}, Y::Union{Vector, String})
     # we're going to solve with dynamic programming, so let's first pre-allocate
     # our result array, which will store possible lengths of the common
     # substrings.
@@ -21,7 +34,7 @@ function deepdiff{T <: Union{Vector, String}}(X::T, Y::T)
     added = Int[]
     backtrack(lengths, removed, added, X, Y, length(X), length(Y))
 
-    (removed, added)
+    VectorDiff(X, Y, removed, added)
 end
 
 # recursively trace back the longest common subsequence, adding items
@@ -38,30 +51,30 @@ function backtrack(lengths, removed, added, X, Y, i, j)
     end
 end
 
-function Base.show{T<:Array, ET}(io::IO, diff::DeepDiff{T, ET})
-    from = diff.orig[1]
-    to = diff.orig[2]
+function Base.show(io::IO, diff::VectorDiff)
+    from = before(diff)
+    to = after(diff)
 
     ifrom = 1
     iremoved = 1
     print(io, "[")
     while ifrom < length(from)
-        printitem(io, :red, from, ifrom, diff.removed, iremoved) && (iremoved += 1)
+        printitem(io, :red, from, ifrom, removed(diff), iremoved) && (iremoved += 1)
         print(io, ", ")
         ifrom += 1
     end
-    printitem(io, :red, from, ifrom, diff.removed, iremoved) && (iremoved += 1)
+    printitem(io, :red, from, ifrom, removed(diff), iremoved) && (iremoved += 1)
     println(io, "]")
 
     ito = 1
     iadded = 1
     print(io, "[")
     while ito < length(to)
-        printitem(io, :green, to, ito, diff.added, iadded) && (iadded += 1)
+        printitem(io, :green, to, ito, added(diff), iadded) && (iadded += 1)
         print(io, ", ")
         ito += 1
     end
-    printitem(io, :green, to, ito, diff.added, iadded) && (iadded += 1)
+    printitem(io, :green, to, ito, added(diff), iadded) && (iadded += 1)
     println(io, "]")
 end
 

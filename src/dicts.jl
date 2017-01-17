@@ -1,20 +1,33 @@
-function deepdiff(X::Dict, Y::Dict)
+type DictDiff{T1, KT1, T2, KT2} <: DeepDiff
+    before::T1
+    after::T2
+    removed::Set{KT1}
+    added::Set{KT2}
+    changed::Set{KT1}
+end
+
+before(diff::DictDiff) = diff.before
+after(diff::DictDiff) = diff.after
+removed(diff::DictDiff) = diff.removed
+added(diff::DictDiff) = diff.added
+changed(diff::DictDiff) = diff.changed
+
+function deepdiff(X::Associative, Y::Associative)
     xkeys = Set(keys(X))
     ykeys = Set(keys(Y))
+    bothkeys = intersect(xkeys, ykeys)
+    changedkeys = Set{eltype(bothkeys)}()
 
     removed = setdiff(xkeys, ykeys)
     added = setdiff(ykeys, xkeys)
 
-    for key in intersect(xkeys, ykeys)
+    for key in bothkeys
         if X[key] != Y[key]
-            # the value changed, so add to both the removed and added lists
-            push!(removed, key)
-            push!(added, key)
+            push!(changedkeys, key)
         end
     end
 
-    # TODO: not sure whether we want to return a Vector or a Set
-    (removed, added)
+    DictDiff(X, Y, removed, added, changedkeys)
 end
 
 function outputlines(obj)
@@ -24,9 +37,9 @@ function outputlines(obj)
     split(takebuf_string(buf))
 end
 
-function Base.show{T<:Dict, ET}(io::IO, diff::DeepDiff{T, ET})
-    leftout = outputlines(diff.orig[1])
-    rightout = outputlines(diff.orig[2])
+function Base.show(io::IO, diff::DictDiff)
+    leftout = outputlines(before(diff))
+    rightout = outputlines(after(diff))
 
     leftwidth = maximum(map(length, leftout))
 end

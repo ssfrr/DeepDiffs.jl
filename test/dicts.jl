@@ -9,26 +9,32 @@
     )
 
     # one changed
-    @test deepdiff(d1, Dict(
+    d = deepdiff(d1, Dict(
         :foo => "foo",
         :bar => "biz",
         :baz => Dict(
             :fizz => "fizz",
             :buzz => "buzz"
         )
-    )) == (Set([:bar]), Set([:bar]))
+    ))
+    @test added(d) == Set()
+    @test removed(d) == Set()
+    @test changed(d) == Set([:bar])
 
     # one removed
-    @test deepdiff(d1, Dict(
+    d = deepdiff(d1, Dict(
         :foo => "foo",
         :baz => Dict(
             :fizz => "fizz",
             :buzz => "buzz"
         )
-    )) == (Set([:bar]), Set([]))
+    ))
+    @test added(d) == Set()
+    @test removed(d) == Set([:bar])
+    @test changed(d) == Set()
 
     # one added
-    @test deepdiff(d1, Dict(
+    d = deepdiff(d1, Dict(
         :foo => "foo",
         :bar => "bar",
         :biz => "biz",
@@ -36,21 +42,33 @@
             :fizz => "fizz",
             :buzz => "buzz"
         )
-    )) == (Set([]), Set([:biz]))
+    ))
+    @test added(d) == Set([:biz])
+    @test removed(d) == Set()
+    @test changed(d) == Set()
 
     # inner dict modified
-    @test deepdiff(d1, Dict(
+    d = deepdiff(d1, Dict(
         :foo => "foo",
         :bar => "bar",
         :baz => Dict(
             :fizz => "fizz",
             :buzz => "bizzle"
         )
-    )) == (Set([:baz]), Set([:baz]))
+    ))
+    @test added(d) == Set()
+    @test removed(d) == Set()
+    @test changed(d) == Set([:baz])
 
     # totally removed
-    @test deepdiff(d1, Dict()) == (Set([:foo, :bar, :baz]), Set([]))
+    d = deepdiff(d1, Dict())
+    @test added(d) == Set()
+    @test removed(d) == Set([:foo, :bar, :baz])
+    @test changed(d) == Set()
 
     # totally added
-    @test deepdiff(Dict(), d1) == (Set([]), Set([:foo, :bar, :baz]))
+    d = deepdiff(Dict(), d1)
+    @test added(d) == Set([:foo, :bar, :baz])
+    @test removed(d) == Set()
+    @test changed(d) == Set()
 end

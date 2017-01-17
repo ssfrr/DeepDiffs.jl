@@ -11,12 +11,22 @@
 ### Goals
 
 * some kind of `diff` function to compare two data structures and see what changed
-* pretty-printing of diffs that show removed in red, added in green, and _maybe_ modified in yellow
+* pretty-printing of diffs that show removed in red, added in green, and modified in yellow when it makes sense.
 
 ### API
 
-`structdiff(from, to)` function - returns `T <: StructDiff`, supports `from`, `to`, `added`, `removed`, `modified` methods
+`deepdiff(from, to)` function - returns some `T <: DeepDiff`, supports `from`, `to`, `added`, `removed`, `changed` methods.
 
 OR
 
-`structdiff(from, to)` returns a `(added, removed)` tuple
+`deepdiff(from, to)` returns a `(added, removed)` tuple
+
+
+### Pretty Printing
+
+```julia
+julia> deepdiff([1, 2, 3, 4], [1, 6, 7, 3, 4])
+
+[1, 2, 3, 4]
+[1, 6, 7, 3, 4]
+```
