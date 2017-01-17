@@ -4,8 +4,8 @@ os:
   - linux
   - osx
 julia:
-  - release
-  - nightly
+  - 0.5
+  - 0.6
 notifications:
   email: false
 # uncomment the following lines to override the default test script
@@ -13,7 +13,5 @@ notifications:
 #  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
 #  - julia -e 'Pkg.clone(pwd()); Pkg.build("DeepDiff"); Pkg.test("DeepDiff"; coverage=true)'
 after_success:
-  # push coverage results to Coveralls
-  - julia -e 'cd(Pkg.dir("DeepDiff")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
   # push coverage results to Codecov
   - julia -e 'cd(Pkg.dir("DeepDiff")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
