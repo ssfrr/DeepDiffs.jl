@@ -14,6 +14,17 @@ function deepdiff end
 
 abstract DeepDiff
 
+# fallback diff that just stores two values
+type SimpleDiff{T1, T2} <: DeepDiff
+    before::T1
+    after::T2
+end
+
+before(d::SimpleDiff) = d.before
+after(d::SimpleDiff) = d.after
+
+deepdiff(x, y) = SimpleDiff(x, y)
+
 include("arrays.jl")
 include("dicts.jl")
 include("display.jl")

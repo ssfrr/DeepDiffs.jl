@@ -13,7 +13,7 @@ changed(diff::VectorDiff) = Int[]
 
 # diffing an array is an application of the Longest Common Subsequence problem:
 # https://en.wikipedia.org/wiki/Longest_common_subsequence_problem
-function deepdiff(X::Union{Vector, String}, Y::Union{Vector, String})
+function deepdiff(X::Vector, Y::Vector)
     # we're going to solve with dynamic programming, so let's first pre-allocate
     # our result array, which will store possible lengths of the common
     # substrings.
@@ -66,23 +66,23 @@ function Base.show(io::IO, diff::VectorDiff)
     while ifrom <= length(from) || ito <= length(to)
         if iremoved <= length(rem) && ifrom == rem[iremoved]
             printitem(io, from[ifrom], :red, "(-)")
-            (ito < length(to) || ifrom < length(from)) && print_with_color(:red, io, ", ")
             ifrom += 1
             iremoved += 1
+            (ifrom <= length(from) || ito <= length(to)) && print_with_color(:red, io, ", ")
         elseif iadded <= length(add) && ito == add[iadded]
             printitem(io, to[ito], :green, "(+)")
-            (ito < length(to) || ifrom < length(from)) && print_with_color(:green, io, ", ")
             ito += 1
             iadded += 1
+            (ifrom <= length(from) || ito <= length(to)) && print_with_color(:green, io, ", ")
         else
             # not removed or added, must be in both
             printitem(io, from[ifrom])
-            (ito < length(to) || ifrom < length(from)) && print(io, ", ")
             ifrom += 1
             ito += 1
+            (ifrom <= length(from) || ito <= length(to)) && print(io, ", ")
         end
     end
-    println(io, "]")
+    print(io, "]")
 end
 
 function printitem(io, v, color=:normal, prefix="")
