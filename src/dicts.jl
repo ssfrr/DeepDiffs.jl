@@ -47,6 +47,9 @@ end
 
 Base.show(io::IO, diff::DictDiff) = diffprint(io, diff, 0)
 
+# indentation space
+const inspace = "    "
+
 function diffprint(io, d::DictDiff, indent=0)
     bef = before(d)
     aft = after(d)
@@ -54,56 +57,58 @@ function diffprint(io, d::DictDiff, indent=0)
     println(io, "Dict(")
     for k in d.unchanged
         # extra space to account for added linemarker
-        print(io, " ", "  " ^ (indent+1))
+        print(io, " ", inspace ^ (indent+1))
         prettyprint(io, Pair(k, bef[k]), " ", indent+1)
         println(io, ",")
     end
-    # TODO: use `with_output_color` in 0.6 to make this cleaner
-    Base.have_color && print(io, Base.text_colors[:red])
-    for k in removed(d)
-        print(io, "-", "  " ^ (indent+1))
-        prettyprint(io, Pair(k, bef[k]), "-", indent+1)
-        println(io, ",")
+    Base.with_output_color(:red, io) do io
+        for k in removed(d)
+            print(io, "-", inspace ^ (indent+1))
+            prettyprint(io, Pair(k, bef[k]), "-", indent+1)
+            println(io, ",")
+        end
     end
-    Base.have_color && print(io, Base.text_colors[:normal])
     for (k, v) in changed(d)
         if isa(v, SimpleDiff)
             # if we have a key pointing to a SimpleDiff, then we don't know how to
             # deconstruct the value, so instead we print it like a removed and added key
-            Base.have_color && print(io, Base.text_colors[:red])
-            print(io, "-", "  " ^ (indent+1))
-            prettyprint(io, Pair(k, before(v)), "-", indent+1)
-            println(io, ",")
-            Base.have_color && print(io, Base.text_colors[:green])
-            print(io, "+", "  " ^ (indent+1))
-            prettyprint(io, Pair(k, after(v)), "+", indent+1)
-            println(io, ",")
-            Base.have_color && print(io, Base.text_colors[:normal])
+            Base.with_output_color(:red, io) do io
+                print(io, "-", inspace ^ (indent+1))
+                prettyprint(io, Pair(k, before(v)), "-", indent+1)
+                println(io, ",")
+            end
+            Base.with_output_color(:green, io) do io
+                print(io, "+", inspace ^ (indent+1))
+                prettyprint(io, Pair(k, after(v)), "+", indent+1)
+                println(io, ",")
+            end
         else
             # extra space to account for added linemarker
-            print(io, " ", "  " ^ (indent+1))
+            print(io, " ", inspace ^ (indent+1))
             prettyprint(io, Pair(k, v), " ", indent+1)
             println(io, ",")
         end
     end
-    Base.have_color && print(io, Base.text_colors[:green])
-    for k in added(d)
-        print(io, "+", "  " ^ (indent+1))
-        prettyprint(io, Pair(k, aft[k]), "+", indent+1)
-        println(io, ",")
+    Base.with_output_color(:green, io) do io
+        for k in added(d)
+            print(io, "+", inspace ^ (indent+1))
+            prettyprint(io, Pair(k, aft[k]), "+", indent+1)
+            println(io, ",")
+        end
     end
-    Base.have_color && print(io, Base.text_colors[:normal])
-    print(io, " ", "  " ^ indent, ")")
+    # don't print the leading space if we're at the top-level
+    print(io, indent == 0 ? "" : " ")
+    print(io, inspace ^ indent, ")")
 end
 
 function prettyprint(io, d::Associative, linemarker, indent)
     println(io, "Dict(")
     for p in d
-        print(io, linemarker, "  " ^ (indent+1))
+        print(io, linemarker, inspace ^ (indent+1))
         prettyprint(io, p, linemarker, indent+1)
         println(io, ",")
     end
-    print(io, linemarker, "  " ^ indent, ")")
+    print(io, linemarker, inspace ^ indent, ")")
 end
 
 function prettyprint(io, p::Pair, linemarker, indent)
@@ -117,6 +122,5 @@ function prettyprint{T1, T2<:DictDiff}(io, p::Pair{T1, T2}, linemarker, indent)
     print(io, " => ")
     diffprint(io, p[2], indent)
 end
-
 
 prettyprint(io, x, linemarker, indent) = show(io, x)
