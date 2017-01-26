@@ -54,7 +54,7 @@ function Base.show(io::IO, diff::StringLineDiff)
             print(io, "  ", escape_string(xlines[idx]))
         end
         if last
-            println(io, "\"\"\"")
+            print(io, "\"\"\"")
         else
             println(io)
         end

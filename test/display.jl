@@ -145,4 +145,59 @@
         end
         eval(Base, :(have_color=$orig_color))
     end
+
+    @testset "Multi-line strings display correctly" begin
+    s1 = """
+        differences can
+        be hard to find
+        in
+        multiline
+        output"""
+    s2 = """
+        differences can
+        be hurd to find
+        multiline
+        output"""
+    diff = deepdiff(s1, s2)
+    buf = IOBuffer()
+    orig_color = Base.have_color
+    @testset "Color Display" begin
+        eval(Base, :(have_color=true))
+        # in 0.6 colored output is no longer bold
+        if VERSION < v"0.6.0-"
+            expected = """
+            \"\"\"
+              differences can
+            [1m[31m- be hard to find[0m
+            [1m[31m- in[0m
+            [1m[32m+ be hurd to find[0m
+              multiline
+              output\"\"\""""
+        else
+            expected = """
+            \"\"\"
+              differences can
+            [31m- be hard to find[39m
+            [31m- in[39m
+            [32m+ be hurd to find[39m
+              multiline
+              output\"\"\""""
+        end
+        display(TextDisplay(buf), diff)
+        @test String(take!(buf)) == expected
+    end
+    @testset "No-Color Display" begin
+        eval(Base, :(have_color=false))
+        display(TextDisplay(buf), diff)
+        @test String(take!(buf)) == """
+        \"\"\"
+          differences can
+        - be hard to find
+        - in
+        + be hurd to find
+          multiline
+          output\"\"\""""
+    end
+    eval(Base, :(have_color=$orig_color))
+    end
 end
