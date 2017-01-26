@@ -16,18 +16,22 @@
                 [[32m2[39m[32m, [39m[32m3[39m[32m, [39m[32m4[39m[32m, [39m[0m1, [0m2, [31m7[39m[31m, [39m[0m3, [32m5[39m]"""
             expected2 = """[[31m1[39m[31m, [39m[32m2[39m]"""
         end
-        display(TextDisplay(buf), d1)
-        @test String(take!(buf)) == expected1
-        display(TextDisplay(buf), d2)
-        @test String(take!(buf)) == expected2
+        @testset "Color Diffs" begin
+            display(TextDisplay(buf), d1)
+            @test String(take!(buf)) == expected1
+            display(TextDisplay(buf), d2)
+            @test String(take!(buf)) == expected2
+        end
 
         eval(Base, :(have_color=false))
-        display(TextDisplay(buf), d1)
-        @test String(take!(buf)) == """
-            [(+)2, (+)3, (+)4, 1, 2, (-)7, 3, (+)5]"""
-        display(TextDisplay(buf), d2)
-        @test String(take!(buf)) == """
-            [(-)1, (+)2]"""
+        @testset "No-Color Diffs" begin
+            display(TextDisplay(buf), d1)
+            @test String(take!(buf)) == """
+                [(+)2, (+)3, (+)4, 1, 2, (-)7, 3, (+)5]"""
+            display(TextDisplay(buf), d2)
+            @test String(take!(buf)) == """
+                [(-)1, (+)2]"""
+        end
 
         eval(Base, :(have_color=$orig_color))
     end
@@ -83,9 +87,8 @@
                  ),
             [1m[31m-    :c => "c",
             [0m     :list => [[0m1[0m, [1m[31m2[0m[1m[31m, [0m[1m[32m4[0m[1m[32m, [0m[0m3[0m],
-            [1m[31m-    :b => "b",
-            [0m[1m[32m+    :b => "d",
-            [0m     :dict2 => Dict(
+                 :b => "[1m[31mb[0m[1m[32md[0m",
+                 :dict2 => Dict(
                      :a => 1,
             [1m[31m-        :b => 2,
             [0m[1m[31m-        :c => 3,
@@ -104,9 +107,8 @@
                  ),
             [31m-    :c => "c",
             [39m     :list => [[0m1, [31m2[39m[31m, [39m[32m4[39m[32m, [39m[0m3],
-            [31m-    :b => "b",
-            [39m[32m+    :b => "d",
-            [39m     :dict2 => Dict(
+                 :b => "[31mb[39m[32md[39m",
+                 :dict2 => Dict(
                      :a => 1,
             [31m-        :b => 2,
             [39m[31m-        :c => 3,
@@ -115,10 +117,13 @@
             [32m+    :e => "e",
             [39m)"""
         end
-        @test String(take!(buf)) == expected
+        @testset "Color Diffs" begin
+            @test String(take!(buf)) == expected
+        end
         eval(Base, :(have_color=false))
         display(TextDisplay(buf), d)
-        @test String(take!(buf)) == """
+        @testset "No-Color Diffs" begin
+            @test String(take!(buf)) == """
             Dict(
                  :a => "a",
                  :dict1 => Dict(
@@ -128,8 +133,7 @@
                  ),
             -    :c => "c",
                  :list => [1, (-)2, (+)4, 3],
-            -    :b => "b",
-            +    :b => "d",
+                 :b => "{-b-}{+d+}",
                  :dict2 => Dict(
                      :a => 1,
             -        :b => 2,
@@ -138,6 +142,7 @@
                  ),
             +    :e => "e",
             )"""
+        end
         eval(Base, :(have_color=$orig_color))
     end
 end

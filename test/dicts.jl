@@ -8,76 +8,82 @@
         )
     )
 
-    # one changed
-    d = deepdiff(d1, Dict(
-        :foo => "foo",
-        :bar => "biz",
-        :baz => Dict(
-            :fizz => "fizz",
-            :buzz => "buzz"
-        )
-    ))
-    @test added(d) == Set()
-    @test removed(d) == Set()
-    @test changed(d) == Dict{Symbol, DeepDiffs.DeepDiff}(:bar => deepdiff("bar", "biz"))
+    @testset "One Changed" begin
+        d = deepdiff(d1, Dict(
+            :foo => "foo",
+            :bar => "biz",
+            :baz => Dict(
+                :fizz => "fizz",
+                :buzz => "buzz"
+            )
+        ))
+        @test added(d) == Set()
+        @test removed(d) == Set()
+        @test changed(d) == Dict{Symbol, DeepDiffs.DeepDiff}(:bar => deepdiff("bar", "biz"))
+    end
 
-    # one removed
-    d = deepdiff(d1, Dict(
-        :foo => "foo",
-        :baz => Dict(
-            :fizz => "fizz",
-            :buzz => "buzz"
-        )
-    ))
-    @test added(d) == Set()
-    @test removed(d) == Set([:bar])
-    @test changed(d) == Dict()
+    @testset "One Removed" begin
+        d = deepdiff(d1, Dict(
+            :foo => "foo",
+            :baz => Dict(
+                :fizz => "fizz",
+                :buzz => "buzz"
+            )
+        ))
+        @test added(d) == Set()
+        @test removed(d) == Set([:bar])
+        @test changed(d) == Dict()
+    end
 
-    # one added
-    d = deepdiff(d1, Dict(
-        :foo => "foo",
-        :bar => "bar",
-        :biz => "biz",
-        :baz => Dict(
-            :fizz => "fizz",
-            :buzz => "buzz"
-        )
-    ))
-    @test added(d) == Set([:biz])
-    @test removed(d) == Set()
-    @test changed(d) == Dict()
+    @testset "One Added" begin
+        d = deepdiff(d1, Dict(
+            :foo => "foo",
+            :bar => "bar",
+            :biz => "biz",
+            :baz => Dict(
+                :fizz => "fizz",
+                :buzz => "buzz"
+            )
+        ))
+        @test added(d) == Set([:biz])
+        @test removed(d) == Set()
+        @test changed(d) == Dict()
+    end
 
-    # inner dict modified
-    d = deepdiff(d1, Dict(
-        :foo => "foo",
-        :bar => "bar",
-        :baz => Dict(
-            :fizz => "fizz",
-            :buzz => "bizzle"
-        )
-    ))
-    @test added(d) == Set()
-    @test removed(d) == Set()
-    @test changed(d) == Dict{Symbol, DeepDiffs.DeepDiff}(:baz => deepdiff(
-        Dict(
-            :fizz => "fizz",
-            :buzz => "buzz"
-        ),
-        Dict(
-            :fizz => "fizz",
-            :buzz => "bizzle"
-        )
-    ))
+    @testset "Inner Dict Modified" begin
+        d = deepdiff(d1, Dict(
+            :foo => "foo",
+            :bar => "bar",
+            :baz => Dict(
+                :fizz => "fizz",
+                :buzz => "bizzle"
+            )
+        ))
+        @test added(d) == Set()
+        @test removed(d) == Set()
+        @test changed(d) == Dict{Symbol, DeepDiffs.DeepDiff}(:baz => deepdiff(
+            Dict(
+                :fizz => "fizz",
+                :buzz => "buzz"
+            ),
+            Dict(
+                :fizz => "fizz",
+                :buzz => "bizzle"
+            )
+        ))
+    end
 
-    # totally removed
-    d = deepdiff(d1, Dict())
-    @test added(d) == Set()
-    @test removed(d) == Set([:foo, :bar, :baz])
-    @test changed(d) == Dict()
+    @testset "Totally Removed" begin
+        d = deepdiff(d1, Dict())
+        @test added(d) == Set()
+        @test removed(d) == Set([:foo, :bar, :baz])
+        @test changed(d) == Dict()
+    end
 
-    # totally added
-    d = deepdiff(Dict(), d1)
-    @test added(d) == Set([:foo, :bar, :baz])
-    @test removed(d) == Set()
-    @test changed(d) == Dict()
+    @testset "Totally added" begin
+        d = deepdiff(Dict(), d1)
+        @test added(d) == Set([:foo, :bar, :baz])
+        @test removed(d) == Set()
+        @test changed(d) == Dict()
+    end
 end

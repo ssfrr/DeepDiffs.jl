@@ -11,6 +11,15 @@ removed(diff::VectorDiff) = diff.removed
 added(diff::VectorDiff) = diff.added
 changed(diff::VectorDiff) = Int[]
 
+function ==(d1::VectorDiff, d2::VectorDiff)
+    d1.before == d2.before || return false
+    d1.after == d2.after || return false
+    d1.removed == d2.removed || return false
+    d1.added == d2.added || return false
+
+    true
+end
+
 # diffing an array is an application of the Longest Common Subsequence problem:
 # https://en.wikipedia.org/wiki/Longest_common_subsequence_problem
 function deepdiff(X::Vector, Y::Vector)
@@ -51,7 +60,11 @@ function backtrack(lengths, removed, added, X, Y, i, j)
     end
 end
 
-function Base.show(io::IO, diff::VectorDiff)
+# takes a function to be called for each item. The arguments given to the function
+# are the items index, the state of the item (:removed, :added, :same) and a boolean
+# for whether it's the last item. Indices are given for the `before` array when
+# the state is :removed or :same, and for the `after` array when it's :added.
+function visitall(f::Function, diff::VectorDiff)
     from = before(diff)
     to = after(diff)
     rem = removed(diff)
@@ -62,29 +75,47 @@ function Base.show(io::IO, diff::VectorDiff)
     iremoved = 1
     iadded = 1
 
-    print(io, "[")
     while ifrom <= length(from) || ito <= length(to)
         if iremoved <= length(rem) && ifrom == rem[iremoved]
-            printitem(io, from[ifrom], :red, "(-)")
             ifrom += 1
             iremoved += 1
-            (ifrom <= length(from) || ito <= length(to)) && print_with_color(:red, io, ", ")
+            f(ifrom-1, :removed, ifrom > length(from) && ito > length(to))
         elseif iadded <= length(add) && ito == add[iadded]
-            printitem(io, to[ito], :green, "(+)")
             ito += 1
             iadded += 1
-            (ifrom <= length(from) || ito <= length(to)) && print_with_color(:green, io, ", ")
+            f(ito-1, :added, ifrom > length(from) && ito > length(to))
         else
             # not removed or added, must be in both
-            printitem(io, from[ifrom])
             ifrom += 1
             ito += 1
-            (ifrom <= length(from) || ito <= length(to)) && print(io, ", ")
+            f(ifrom-1, :same, ifrom > length(from) && ito > length(to))
+        end
+    end
+end
+
+function Base.show(io::IO, diff::VectorDiff)
+    from = before(diff)
+    to = after(diff)
+    rem = removed(diff)
+    add = added(diff)
+    print(io, "[")
+
+    visitall(diff) do idx, state, last
+        if state == :removed
+            printitem(io, from[idx], :red, "(-)")
+            last || print_with_color(:red, io, ", ")
+        elseif state == :added
+            printitem(io, to[idx], :green, "(+)")
+            last || print_with_color(:green, io, ", ")
+        else
+            printitem(io, from[idx])
+            last || print(io, ", ")
         end
     end
     print(io, "]")
 end
 
+# prefix is printed if we're not using color
 function printitem(io, v, color=:normal, prefix="")
     if(Base.have_color)
         print_with_color(color, io, string(v))

@@ -30,5 +30,6 @@ deepdiff(x, y) = SimpleDiff(x, y)
 
 include("arrays.jl")
 include("dicts.jl")
+include("strings.jl")
 
 end # module
