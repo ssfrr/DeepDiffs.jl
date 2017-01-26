@@ -4,27 +4,40 @@
 [![Appveyor status](https://ci.appveyor.com/api/projects/status/jim9hndbolm8p9p4/branch/master?svg=true)](https://ci.appveyor.com/project/ssfrr/deepdiffs-jl/branch/master)
 [![codecov.io](http://codecov.io/github/ssfrr/DeepDiffs.jl/coverage.svg?branch=master)](http://codecov.io/github/ssfrr/DeepDiffs.jl?branch=master)
 
-## Design Thoughts
+DeepDiff.jl provides the `deepdiff` function, finds and displays differences (diffs) between Julia data structures. It supports `Vector`s, `Dict`s, and `String`s. When diffing dictionaries where values associated with a particular key may change, `deepdiff` will recurse into value to provide a more detailed diff.
 
-### Goals
+Many users will likely only use the `deepdiff` function to interactively visualize diffs. The return value from `deepdiff` will be some subtype of the `DeepDiff` abstract type. These subtypes support the following functions:
 
-* some kind of `diff` function to compare two data structures and see what changed
-* pretty-printing of diffs that show removed in red, added in green, and modified in yellow when it makes sense.
+* `before(diff)`: returns the first original (left-hand-side) value that was diffed
+* `after(diff)`: returns the modified (right-hand-side) value that was diffed
+* `added(diff)`: returns a list of indices or dictionary keys that were new items. These indices correspond to the "after" value.
+* `removed(diff)`: returns a list of indices or dictionary keys that were removed. These indices correspond to the "before" value.
+* `changed(diff)`: returns a dictionary whose keys are indices or dictionary keys and whose values are themselves `DeepDiff`s that describe the modified value. Currently this is only meaningful when diffing dictionaries because the keys can be matched up between the original and modified values.
 
-### API
+## Diffing `Vector`s
 
-`deepdiff(from, to)` function - returns some `T <: DeepDiff`, supports `from`, `to`, `added`, `removed`, `changed` methods.
+`Vector`s are diffed using a longest-subsequence algorithm that tries to minmize the number of additions and removals necessary to transform one `Vector` to another.
 
-OR
+![Dict diff output](http://ssfrr.github.io/DeepDiffs.jl/images/vectordiff.png)
 
-`deepdiff(from, to)` returns a `(added, removed)` tuple
+## Diffing `Dict`s
 
+`Dict`s are diffed by matching up the keys between the original and modified values, so it can recognize removed, added, or modified values.
 
-### Pretty Printing
+![Dict diff output](http://ssfrr.github.io/DeepDiffs.jl/images/dictdiff.png)
 
-```julia
-julia> deepdiff([1, 2, 3, 4], [1, 6, 7, 3, 4])
+![Dict diff output](http://ssfrr.github.io/DeepDiffs.jl/images/dictdiff_nocolor.png)
 
-[1, 2, 3, 4]
-[1, 6, 7, 3, 4]
-```
+## Diffing `String`s
+
+### Single-line strings
+
+Single-line strings are diffed character-by-character. The indices returned by `added` and `removed` correspond to indices in the `Vector` of characters returned by `collect(str::String)`.
+
+![Dict diff output](http://ssfrr.github.io/DeepDiffs.jl/images/singlestringdiff.png)
+
+### Multi-line strings
+
+Multi-line strings (strings with at least one newline) are diffed line-by-line. The indices returned by `added` and `removed` correspond to line numbers.
+
+![Dict diff output](http://ssfrr.github.io/DeepDiffs.jl/images/multistringdiff.png)
