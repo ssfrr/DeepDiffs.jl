@@ -4,9 +4,9 @@
 [![Appveyor status](https://ci.appveyor.com/api/projects/status/jim9hndbolm8p9p4/branch/master?svg=true)](https://ci.appveyor.com/project/ssfrr/deepdiffs-jl/branch/master)
 [![codecov.io](http://codecov.io/github/ssfrr/DeepDiffs.jl/coverage.svg?branch=master)](http://codecov.io/github/ssfrr/DeepDiffs.jl?branch=master)
 
-DeepDiff.jl provides the `deepdiff` function, finds and displays differences (diffs) between Julia data structures. It supports `Vector`s, `Dict`s, and `String`s. When diffing dictionaries where values associated with a particular key may change, `deepdiff` will recurse into value to provide a more detailed diff.
+DeepDiff.jl provides the `deepdiff` function, which finds and displays differences (diffs) between Julia data structures. It supports `Vector`s, `Dict`s, and `String`s. When diffing dictionaries where values associated with a particular key may change, `deepdiff` will recurse into value to provide a more detailed diff.
 
-Many users will likely only use the `deepdiff` function to interactively visualize diffs. The return value from `deepdiff` will be some subtype of the `DeepDiff` abstract type. These subtypes support the following functions:
+Many users will likely only use the `deepdiff` function to interactively visualize diffs. For more advanced usage, the return value from `deepdiff` will be some subtype of the `DeepDiff` abstract type which can be further manipulated. These subtypes support the following functions:
 
 * `before(diff)`: returns the first original (left-hand-side) value that was diffed
 * `after(diff)`: returns the modified (right-hand-side) value that was diffed
@@ -25,6 +25,8 @@ Many users will likely only use the `deepdiff` function to interactively visuali
 `Dict`s are diffed by matching up the keys between the original and modified values, so it can recognize removed, added, or modified values.
 
 ![Dict diff output](http://ssfrr.github.io/DeepDiffs.jl/images/dictdiff.png)
+
+If color is disabled then the additions and removals are displayed a little differently:
 
 ![Dict diff output](http://ssfrr.github.io/DeepDiffs.jl/images/dictdiff_nocolor.png)
 
