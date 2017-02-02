@@ -146,6 +146,17 @@
         eval(Base, :(have_color=$orig_color))
     end
 
+    @testset "single-line strings display correctly" begin
+        # this test is just to handle some cases that don't get exercised elsewhere
+        orig_color = Base.have_color
+        diff = deepdiff("abc", "adb")
+        buf = IOBuffer()
+        eval(Base, :(have_color=false))
+        display(TextDisplay(buf), diff)
+        @test String(take!(buf)) == "\"a{+d+}b{-c-}\""
+        eval(Base, :(have_color=true))
+    end
+
     @testset "Multi-line strings display correctly" begin
     s1 = """
         differences can
