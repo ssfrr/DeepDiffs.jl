@@ -6,8 +6,8 @@
         buf = IOBuffer()
         orig_color = Base.have_color
         eval(Base, :(have_color=true))
-        # in 0.6 colored output is no longer bold
-        if VERSION < v"0.6.0-"
+        # in 0.6 colored output is no longer bold as of PR #18628
+        if VERSION < v"0.6.0-dev.1574"
             expected1 = """
                 [[1m[32m2[0m[1m[32m, [0m[1m[32m3[0m[1m[32m, [0m[1m[32m4[0m[1m[32m, [0m[0m1[0m, [0m2[0m, [1m[31m7[0m[1m[31m, [0m[0m3[0m, [1m[32m5[0m]"""
             expected2 = """[[1m[31m1[0m[1m[31m, [0m[1m[32m2[0m]"""
@@ -75,8 +75,8 @@
         eval(Base, :(have_color=true))
         buf = IOBuffer()
         display(TextDisplay(buf), d)
-        # in 0.6 colored output is no longer bold
-        if VERSION < v"0.6.0-"
+        # in 0.6 colored output is no longer bold as of PR #18628
+        if VERSION < v"0.6.0-dev.1574"
             expected = """
             Dict(
                  :a => "a",
@@ -174,8 +174,8 @@
     orig_color = Base.have_color
     @testset "Color Display" begin
         eval(Base, :(have_color=true))
-        # in 0.6 colored output is no longer bold
-        if VERSION < v"0.6.0-"
+        # in 0.6 colored output is no longer bold as of PR #18628
+        if VERSION < v"0.6.0-dev.1574"
             expected = """
             \"\"\"
               differences can

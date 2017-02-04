@@ -1,6 +1,7 @@
 module DeepDiffs
 
 export deepdiff, added, removed, changed, before, after
+export SimpleDiff, VectorDiff, StringDiff, DictDiff
 
 """
 diff = deepdiff(obj1, obj2)
