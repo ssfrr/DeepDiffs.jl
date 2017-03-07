@@ -47,9 +47,9 @@ function Base.show(io::IO, diff::StringLineDiff)
     println(io, "\"\"\"")
     visitall(diff.diff) do idx, state, last
         if state == :removed
-            print_with_color(:red, io, "- ", escape_string(xlines[idx]))
+            print_with_color(MINUS_COLOR, io, "- ", escape_string(xlines[idx]))
         elseif state == :added
-            print_with_color(:green, io, "+ ", escape_string(ylines[idx]))
+            print_with_color(PLUS_COLOR, io, "+ ", escape_string(ylines[idx]))
         else
             print(io, "  ", escape_string(xlines[idx]))
         end
@@ -83,9 +83,9 @@ function Base.show(io::IO, diff::StringDiff)
             end
         end
         if state == :removed
-            print_with_color(:red, io, string(xchars[idx]))
+            print_with_color(MINUS_COLOR, io, string(xchars[idx]))
         elseif state == :added
-            print_with_color(:green, io, string(ychars[idx]))
+            print_with_color(PLUS_COLOR, io, string(ychars[idx]))
         else
             print(io, xchars[idx])
         end

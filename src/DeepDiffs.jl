@@ -3,6 +3,9 @@ module DeepDiffs
 export deepdiff, added, removed, changed, before, after
 export SimpleDiff, VectorDiff, StringDiff, DictDiff
 
+using Crayons
+using Crayons.Box
+
 """
 diff = deepdiff(obj1, obj2)
 
@@ -28,6 +31,9 @@ before(d::SimpleDiff) = d.before
 after(d::SimpleDiff) = d.after
 
 deepdiff(x, y) = SimpleDiff(x, y)
+
+const MINUS_COLOR = RED_BG
+const PLUS_COLOR  = GREEN_BG
 
 include("arrays.jl")
 include("dicts.jl")
