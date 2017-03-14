@@ -102,11 +102,11 @@ function Base.show(io::IO, diff::VectorDiff)
 
     visitall(diff) do idx, state, last
         if state == :removed
-            printitem(io, from[idx], MINUS_COLOR, "(-)")
-            last || print_with_color(MINUS_COLOR, io, ", ")
+            printitem(io, from[idx], :red, "(-)")
+            last || print_with_color(:red, io, ", ")
         elseif state == :added
-            printitem(io, to[idx], PLUS_COLOR, "(+)")
-            last || print_with_color(PLUS_COLOR, io, ", ")
+            printitem(io, to[idx], :green, "(+)")
+            last || print_with_color(:green, io, ", ")
         else
             printitem(io, from[idx])
             last || print(io, ", ")

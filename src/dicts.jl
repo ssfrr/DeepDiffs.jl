@@ -61,7 +61,7 @@ function diffprint(io, d::DictDiff, indent=0)
         prettyprint(io, Pair(k, bef[k]), " ", indent+1)
         println(io, ",")
     end
-    Base.with_output_color(MINUS_COLOR, io) do io
+    Base.with_output_color(:red, io) do io
         for k in removed(d)
             print(io, "-", inspace ^ (indent+1))
             prettyprint(io, Pair(k, bef[k]), "-", indent+1)
@@ -72,12 +72,12 @@ function diffprint(io, d::DictDiff, indent=0)
         if isa(v, SimpleDiff)
             # if we have a key pointing to a SimpleDiff, then we don't know how to
             # deconstruct the value, so instead we print it like a removed and added key
-            Base.with_output_color(MINUS_COLOR, io) do io
+            Base.with_output_color(:red, io) do io
                 print(io, "-", inspace ^ (indent+1))
                 prettyprint(io, Pair(k, before(v)), "-", indent+1)
                 println(io, ",")
             end
-            Base.with_output_color(PLUS_COLOR, io) do io
+            Base.with_output_color(:green, io) do io
                 print(io, "+", inspace ^ (indent+1))
                 prettyprint(io, Pair(k, after(v)), "+", indent+1)
                 println(io, ",")
@@ -89,7 +89,7 @@ function diffprint(io, d::DictDiff, indent=0)
             println(io, ",")
         end
     end
-    Base.with_output_color(PLUS_COLOR, io) do io
+    Base.with_output_color(:green, io) do io
         for k in added(d)
             print(io, "+", inspace ^ (indent+1))
             prettyprint(io, Pair(k, aft[k]), "+", indent+1)
