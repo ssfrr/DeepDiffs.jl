@@ -41,15 +41,17 @@ function =={T<:AllStringDiffs}(d1::T, d2::T)
     true
 end
 
+replace_spaces(s) = replace(s, " ", ␣)
+
 function Base.show(io::IO, diff::StringLineDiff)
     xlines = split(diff.before, '\n')
     ylines = split(diff.after, '\n')
     println(io, "\"\"\"")
     visitall(diff.diff) do idx, state, last
         if state == :removed
-            print_with_color(:red, io, "- ", escape_string(xlines[idx]))
+            print_with_color(:red, io, "- ", replace_spaces(escape_string(xlines[idx])))
         elseif state == :added
-            print_with_color(:green, io, "+ ", escape_string(ylines[idx]))
+            print_with_color(:green, io, "+ ", replace_spaces(escape_string(ylines[idx])))
         else
             print(io, "  ", escape_string(xlines[idx]))
         end
@@ -83,9 +85,9 @@ function Base.show(io::IO, diff::StringDiff)
             end
         end
         if state == :removed
-            print_with_color(:red, io, string(xchars[idx]))
+            print_with_color(:red, io, replace_spaces(string(xchars[idx])))
         elseif state == :added
-            print_with_color(:green, io, string(ychars[idx]))
+            print_with_color(:green, io, replace_spaces(string(ychars[idx])))
         else
             print(io, xchars[idx])
         end
