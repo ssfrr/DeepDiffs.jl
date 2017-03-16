@@ -1,7 +1,11 @@
+__precompile__()
+
 module DeepDiffs
 
 export deepdiff, added, removed, changed, before, after
 export SimpleDiff, VectorDiff, StringDiff, DictDiff
+
+using Compat
 
 """
 diff = deepdiff(obj1, obj2)
@@ -13,7 +17,7 @@ dictionary keys or array indices.
 """
 function deepdiff end
 
-abstract DeepDiff
+@compat abstract type DeepDiff end
 
 # fallback diff that just stores two values
 type SimpleDiff{T1, T2} <: DeepDiff

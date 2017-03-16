@@ -149,12 +149,16 @@
     @testset "single-line strings display correctly" begin
         # this test is just to handle some cases that don't get exercised elsewhere
         orig_color = Base.have_color
-        diff = deepdiff("abc", "adb")
+        diff = deepdiff("a bc df", "adb e f")
         buf = IOBuffer()
+        eval(Base, :(have_color=true))
+        display(TextDisplay(buf), diff)
+        @test String(take!(buf)) ==
+         "\"a\e[31m␣\e[39m\e[32md\e[39mb\e[31mc\e[39m \e[31md\e[39m\e[32me\e[39m\e[32m␣\e[39mf\""
         eval(Base, :(have_color=false))
         display(TextDisplay(buf), diff)
-        @test String(take!(buf)) == "\"a{+d+}b{-c-}\""
-        eval(Base, :(have_color=true))
+        @test String(take!(buf)) == "\"a{- -}{+d+}b{-c-} {-d-}{+e +}f\""
+        eval(Base, :(have_color=$orig_color))
     end
 
     @testset "Multi-line strings display correctly" begin
