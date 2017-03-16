@@ -25,7 +25,7 @@ function deepdiff(X::AbstractString, Y::AbstractString)
     end
 end
 
-typealias AllStringDiffs Union{StringDiff, StringLineDiff}
+const AllStringDiffs = Union{StringDiff, StringLineDiff}
 
 before(diff::AllStringDiffs) = diff.before
 after(diff::AllStringDiffs) = diff.after
@@ -40,6 +40,8 @@ function =={T<:AllStringDiffs}(d1::T, d2::T)
 
     true
 end
+
+replace_spaces(s) = Base.have_color ? replace(s, " ", "␣") : s
 
 function Base.show(io::IO, diff::StringLineDiff)
     xlines = split(diff.before, '\n')
@@ -83,9 +85,9 @@ function Base.show(io::IO, diff::StringDiff)
             end
         end
         if state == :removed
-            print_with_color(:red, io, string(xchars[idx]))
+            print_with_color(:red, io, replace_spaces(string(xchars[idx])))
         elseif state == :added
-            print_with_color(:green, io, string(ychars[idx]))
+            print_with_color(:green, io, replace_spaces(string(ychars[idx])))
         else
             print(io, xchars[idx])
         end
