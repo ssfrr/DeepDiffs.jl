@@ -13,7 +13,7 @@ dictionary keys or array indices.
 """
 function deepdiff end
 
-abstract DeepDiff
+abstract type DeepDiff end
 
 # fallback diff that just stores two values
 type SimpleDiff{T1, T2} <: DeepDiff
