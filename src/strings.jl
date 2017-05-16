@@ -25,7 +25,7 @@ function deepdiff(X::AbstractString, Y::AbstractString)
     end
 end
 
-typealias AllStringDiffs Union{StringDiff, StringLineDiff}
+const AllStringDiffs = Union{StringDiff, StringLineDiff}
 
 before(diff::AllStringDiffs) = diff.before
 after(diff::AllStringDiffs) = diff.after
