@@ -1,4 +1,4 @@
-# DeepDiff
+# DeepDiffs
 
 [![Travis Status](https://travis-ci.org/ssfrr/DeepDiffs.jl.svg?branch=master)](https://travis-ci.org/ssfrr/DeepDiffs.jl)
 [![Appveyor status](https://ci.appveyor.com/api/projects/status/jim9hndbolm8p9p4/branch/master?svg=true)](https://ci.appveyor.com/project/ssfrr/deepdiffs-jl/branch/master)
