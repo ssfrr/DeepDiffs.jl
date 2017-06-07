@@ -10,12 +10,12 @@
         explines = sort(split(expected, "\n"))
         @test outlines == explines
     end
+    orig_color = Base.have_color
     @testset "Array diffs print correctly" begin
         d1 = deepdiff([1, 2, 7, 3], [2, 3, 4, 1, 2, 3, 5])
         d2 = deepdiff([1], [2])
 
         buf = IOBuffer()
-        orig_color = Base.have_color
         eval(Base, :(have_color=true))
         # in 0.6 colored output is no longer bold as of PR #18628
         if VERSION < v"0.6.0-dev.1574"
@@ -83,7 +83,6 @@
         )
 
         @testset "Color Diffs" begin
-            orig_color = Base.have_color
             eval(Base, :(have_color=true))
             buf = IOBuffer()
             display(TextDisplay(buf), d)
@@ -164,7 +163,6 @@
 
     @testset "single-line strings display correctly" begin
         # this test is just to handle some cases that don't get exercised elsewhere
-        orig_color = Base.have_color
         diff = deepdiff("abc", "adb")
         buf = IOBuffer()
         eval(Base, :(have_color=false))
@@ -187,7 +185,6 @@
         output"""
     diff = deepdiff(s1, s2)
     buf = IOBuffer()
-    orig_color = Base.have_color
     @testset "Color Display" begin
         eval(Base, :(have_color=true))
         # in 0.6 colored output is no longer bold as of PR #18628
