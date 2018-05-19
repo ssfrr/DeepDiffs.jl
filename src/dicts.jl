@@ -1,4 +1,4 @@
-type DictDiff{T1, KT1, T2, KT2} <: DeepDiff
+struct DictDiff{T1, KT1, T2, KT2} <: DeepDiff
     before::T1
     after::T2
     removed::Set{KT1}
@@ -13,18 +13,9 @@ removed(diff::DictDiff) = diff.removed
 added(diff::DictDiff) = diff.added
 changed(diff::DictDiff) = diff.changed
 
-function ==(lhs::DictDiff, rhs::DictDiff)
-    lhs.before == rhs.before || return false
-    lhs.after == rhs.after || return false
-    lhs.removed == rhs.removed || return false
-    lhs.added == rhs.added || return false
-    lhs.changed == rhs.changed || return false
-    lhs.unchanged == rhs.unchanged || return false
+Base.:(==)(lhs::DictDiff, rhs::DictDiff) = fieldequal(lhs, rhs)
 
-    true
-end
-
-function deepdiff(X::Associative, Y::Associative)
+function deepdiff(X::AbstractDict, Y::AbstractDict)
     xkeys = Set(keys(X))
     ykeys = Set(keys(Y))
     bothkeys = intersect(xkeys, ykeys)
@@ -101,7 +92,7 @@ function diffprint(io, d::DictDiff, indent=0)
     print(io, inspace ^ indent, ")")
 end
 
-function prettyprint(io, d::Associative, linemarker, indent)
+function prettyprint(io, d::AbstractDict, linemarker, indent)
     println(io, "Dict(")
     for p in d
         print(io, linemarker, inspace ^ (indent+1))
@@ -117,7 +108,7 @@ function prettyprint(io, p::Pair, linemarker, indent)
     prettyprint(io, p[2], linemarker, indent)
 end
 
-function prettyprint{T1, T2<:DictDiff}(io, p::Pair{T1, T2}, linemarker, indent)
+function prettyprint(io, p::Pair{<:Any, <:DictDiff}, linemarker, indent)
     prettyprint(io, p[1], linemarker, indent)
     print(io, " => ")
     diffprint(io, p[2], indent)

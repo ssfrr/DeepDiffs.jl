@@ -1,7 +1,17 @@
 module DeepDiffs
 
+using Compat
+
 export deepdiff, added, removed, changed, before, after
 export SimpleDiff, VectorDiff, StringDiff, DictDiff
+
+# Helper function for comparing two instances of a type for equality by field
+function fieldequal(x::T, y::T) where T
+    for f in fieldnames(T)
+        getfield(x, f) == getfield(y, f) || return false
+    end
+    true
+end
 
 """
 diff = deepdiff(obj1, obj2)
@@ -16,13 +26,12 @@ function deepdiff end
 abstract type DeepDiff end
 
 # fallback diff that just stores two values
-type SimpleDiff{T1, T2} <: DeepDiff
+struct SimpleDiff{T1, T2} <: DeepDiff
     before::T1
     after::T2
 end
 
-import Base: ==
-==(lhs::SimpleDiff, rhs::SimpleDiff) = lhs.before == rhs.before && lhs.after == rhs.after
+Base.:(==)(lhs::SimpleDiff, rhs::SimpleDiff) = fieldequal(lhs, rhs)
 
 before(d::SimpleDiff) = d.before
 after(d::SimpleDiff) = d.after
