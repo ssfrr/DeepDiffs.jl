@@ -1,4 +1,4 @@
-type VectorDiff{T1, T2} <: DeepDiff
+struct VectorDiff{T1, T2} <: DeepDiff
     before::T1
     after::T2
     removed::Vector{Int}
@@ -11,14 +11,7 @@ removed(diff::VectorDiff) = diff.removed
 added(diff::VectorDiff) = diff.added
 changed(diff::VectorDiff) = Int[]
 
-function ==(d1::VectorDiff, d2::VectorDiff)
-    d1.before == d2.before || return false
-    d1.after == d2.after || return false
-    d1.removed == d2.removed || return false
-    d1.added == d2.added || return false
-
-    true
-end
+Base.:(==)(d1::VectorDiff, d2::VectorDiff) = fieldequal(d1, d2)
 
 # diffing an array is an application of the Longest Common Subsequence problem:
 # https://en.wikipedia.org/wiki/Longest_common_subsequence_problem
@@ -103,10 +96,10 @@ function Base.show(io::IO, diff::VectorDiff)
     visitall(diff) do idx, state, last
         if state == :removed
             printitem(io, from[idx], :red, "(-)")
-            last || print_with_color(:red, io, ", ")
+            last || printstyled(io, ", ", color=:red)
         elseif state == :added
             printitem(io, to[idx], :green, "(+)")
-            last || print_with_color(:green, io, ", ")
+            last || printstyled(io, ", ", color=:green)
         else
             printitem(io, from[idx])
             last || print(io, ", ")
@@ -117,8 +110,8 @@ end
 
 # prefix is printed if we're not using color
 function printitem(io, v, color=:normal, prefix="")
-    if(Base.have_color)
-        print_with_color(color, io, string(v))
+    if Base.have_color
+        printstyled(io, v, color=color)
     else
         print(io, prefix, v)
     end
