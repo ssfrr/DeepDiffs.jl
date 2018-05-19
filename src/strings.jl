@@ -62,7 +62,7 @@ function Base.show(io::IO, diff::StringDiff)
 
     print(io, "\"")
     visitall(diff.diff) do idx, state, last
-        if !Base.have_color
+        if !hascolor(io)
             # check to see if we need to close a block
             if laststate == :removed && state != :removed
                 print(io, "-}")
@@ -85,7 +85,7 @@ function Base.show(io::IO, diff::StringDiff)
         end
         laststate = state
     end
-    if !Base.have_color
+    if !hascolor(io)
         if laststate == :removed
             print(io, "-}")
         elseif laststate == :added

@@ -1,4 +1,21 @@
 @testset "Display tests" begin
+    # Return a stream with color set as specified. On 0.6 this requires setting
+    # a global flag, and the :color property in the IOContext has no effect.
+    function setcolor(yn::Bool)
+        if VERSION < v"0.7.0-DEV.3077"
+            eval(Base, :(have_color = $yn))
+        end
+        IOContext(IOBuffer(), :color=>yn)
+    end
+
+    function resetcolor()
+        global orig_color
+        if VERSION < v"0.7.0-DEV.3077"
+            eval(Base, :(have_color = $orig_color))
+        end
+        nothing
+    end
+
     # check dictionary print output. This is a little complicated because
     # the ordering isn't specified. To work around this we just split
     # up both into lines and make sure they have the same lines in some ordering.
@@ -10,34 +27,33 @@
         explines = sort(split(expected, "\n"))
         @test outlines == explines
     end
-    orig_color = Base.have_color
+
     @testset "Array diffs print correctly" begin
         d1 = deepdiff([1, 2, 7, 3], [2, 3, 4, 1, 2, 3, 5])
         d2 = deepdiff([1], [2])
 
-        buf = IOBuffer()
-        eval(Base, :(have_color=true))
+        buf = setcolor(true)
         expected1 = """
             [[32m2[39m[32m, [39m[32m3[39m[32m, [39m[32m4[39m[32m, [39m[0m1, [0m2, [31m7[39m[31m, [39m[0m3, [32m5[39m]"""
         expected2 = """[[31m1[39m[31m, [39m[32m2[39m]"""
         @testset "Color Diffs" begin
             display(TextDisplay(buf), d1)
-            @test String(take!(buf)) == expected1
+            @test String(take!(buf.io)) == expected1
             display(TextDisplay(buf), d2)
-            @test String(take!(buf)) == expected2
+            @test String(take!(buf.io)) == expected2
         end
 
-        eval(Base, :(have_color=false))
+        buf = setcolor(false)
         @testset "No-Color Diffs" begin
             display(TextDisplay(buf), d1)
-            @test String(take!(buf)) == """
+            @test String(take!(buf.io)) == """
                 [(+)2, (+)3, (+)4, 1, 2, (-)7, 3, (+)5]"""
             display(TextDisplay(buf), d2)
-            @test String(take!(buf)) == """
+            @test String(take!(buf.io)) == """
                 [(-)1, (+)2]"""
         end
 
-        eval(Base, :(have_color=$orig_color))
+        resetcolor()
     end
 
     @testset "Dict diffs print correctly" begin
@@ -76,8 +92,7 @@
         )
 
         @testset "Color Diffs" begin
-            eval(Base, :(have_color=true))
-            buf = IOBuffer()
+            buf = setcolor(true)
             display(TextDisplay(buf), d)
             expected = """
             Dict(
@@ -101,11 +116,10 @@
             # This test is broken because the specifics of how the ANSI color
             # codes are printed change based on the order, which changes with
             # different julia versions.
-            @test_skip String(take!(buf)) == expected
+            @test_skip String(take!(buf.io)) == expected
         end
         @testset "No-Color Diffs" begin
-            eval(Base, :(have_color=false))
-            buf = IOBuffer()
+            buf = setcolor(false)
             display(TextDisplay(buf), d)
             expected = """
             Dict(
@@ -126,19 +140,19 @@
                  ),
             +    :e => "e",
             )"""
-            checkdictprint(String(take!(buf)), expected)
+            checkdictprint(String(take!(buf.io)), expected)
         end
-        eval(Base, :(have_color=$orig_color))
+
+        resetcolor()
     end
 
     @testset "single-line strings display correctly" begin
         # this test is just to handle some cases that don't get exercised elsewhere
         diff = deepdiff("abc", "adb")
-        buf = IOBuffer()
-        eval(Base, :(have_color=false))
+        buf = setcolor(false)
         display(TextDisplay(buf), diff)
-        @test String(take!(buf)) == "\"a{+d+}b{-c-}\""
-        eval(Base, :(have_color=true))
+        @test String(take!(buf.io)) == "\"a{+d+}b{-c-}\""
+        resetcolor()
     end
 
     @testset "Multi-line strings display correctly" begin
@@ -154,9 +168,8 @@
         multiline
         output"""
     diff = deepdiff(s1, s2)
-    buf = IOBuffer()
     @testset "Color Display" begin
-        eval(Base, :(have_color=true))
+        buf = setcolor(true)
         expected = """
         \"\"\"
           differences can
@@ -166,12 +179,12 @@
           multiline
           output\"\"\""""
         display(TextDisplay(buf), diff)
-        @test String(take!(buf)) == expected
+        @test String(take!(buf.io)) == expected
     end
     @testset "No-Color Display" begin
-        eval(Base, :(have_color=false))
+        buf = setcolor(false)
         display(TextDisplay(buf), diff)
-        @test String(take!(buf)) == """
+        @test String(take!(buf.io)) == """
         \"\"\"
           differences can
         - be hard to find
@@ -180,6 +193,6 @@
           multiline
           output\"\"\""""
     end
-    eval(Base, :(have_color=$orig_color))
+    resetcolor()
     end
 end

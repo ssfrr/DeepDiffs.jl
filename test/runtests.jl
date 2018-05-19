@@ -2,6 +2,9 @@ using DeepDiffs
 using Compat
 using Compat.Test
 
+# Capture the original state of the global flag
+orig_color = Base.have_color
+
 @testset "DeepDiff Tests" begin
     include("arrays.jl")
     include("dicts.jl")
