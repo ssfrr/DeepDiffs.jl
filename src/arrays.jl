@@ -110,7 +110,7 @@ end
 
 # prefix is printed if we're not using color
 function printitem(io, v, color=:normal, prefix="")
-    if Base.have_color
+    if hascolor(io)
         printstyled(io, v, color=color)
     else
         print(io, prefix, v)

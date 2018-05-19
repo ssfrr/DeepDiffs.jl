@@ -13,6 +13,13 @@ function fieldequal(x::T, y::T) where T
     true
 end
 
+# Determine whether color is supported by the given stream
+@static if VERSION >= v"0.7.0-DEV.3077"
+    hascolor(io::IO) = get(IOContext(io), :color, false)
+else
+    hascolor(io::IO) = Base.have_color
+end
+
 """
 diff = deepdiff(obj1, obj2)
 
