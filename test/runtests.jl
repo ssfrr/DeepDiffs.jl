@@ -2,8 +2,10 @@ using DeepDiffs
 using Compat
 using Compat.Test
 
-# Capture the original state of the global flag
-orig_color = Base.have_color
+if isdefined(Base, :have_color)
+    # Capture the original state of the global flag
+    orig_color = Base.have_color
+end
 
 @testset "DeepDiff Tests" begin
     include("arrays.jl")
