@@ -1,5 +1,4 @@
 using DeepDiffs
-using Compat
 using Test
 
 if isdefined(Base, :have_color)
