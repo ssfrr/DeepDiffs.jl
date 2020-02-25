@@ -1,0 +1,13 @@
+name = "DeepDiffs"
+uuid = "ab62b9b5-e342-54a8-a765-a90f495de1a6"
+keywords = ["diff"]
+version = "0.1.0"
+
+[deps]
+Compat = "34da2185-b29b-5c13-b0c7-acf172513d20"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
