@@ -1,5 +1,7 @@
 name = "DeepDiffs"
 uuid = "ab62b9b5-e342-54a8-a765-a90f495de1a6"
+license = "MIT"
+desc = "Compute and pretty-print diffs for data structures like arrays and dictionaries"
 keywords = ["diff"]
 version = "0.1.0"
 
