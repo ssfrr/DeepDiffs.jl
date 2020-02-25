@@ -1,6 +1,6 @@
 using DeepDiffs
 using Compat
-using Compat.Test
+using Test
 
 if isdefined(Base, :have_color)
     # Capture the original state of the global flag
