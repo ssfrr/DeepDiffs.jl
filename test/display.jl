@@ -2,17 +2,11 @@
     # Return a stream with color set as specified. On 0.6 this requires setting
     # a global flag, and the :color property in the IOContext has no effect.
     function setcolor(yn::Bool)
-        if VERSION < v"0.7.0-DEV.3077"
-            eval(Base, :(have_color = $yn))
-        end
         IOContext(IOBuffer(), :color=>yn)
     end
 
     function resetcolor()
         global orig_color
-        if VERSION < v"0.7.0-DEV.3077"
-            eval(Base, :(have_color = $orig_color))
-        end
         nothing
     end
 
