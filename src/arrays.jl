@@ -51,13 +51,13 @@ end
 # to the added and removed lists as we go
 function backtrack(lengths, backtracks, removed, added, X, Y, i, j)
     bt = backtracks[i+1, j+1]
-    if bt == (1, 1)
+    if bt != (0, 0)
         backtrack(lengths, backtracks, removed, added, X, Y, ((i, j) .- bt)...)
-    elseif bt == (0, 1)
-        backtrack(lengths, backtracks, removed, added, X, Y, ((i, j) .- bt)...)
+    end
+
+    if bt == (0, 1)
         push!(added, j)
     elseif bt == (1, 0)
-        backtrack(lengths, backtracks, removed, added, X, Y, ((i, j) .- bt)...)
         push!(removed, i)
     end
 end
