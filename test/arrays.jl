@@ -50,4 +50,7 @@
 
     d = deepdiff([missing], [missing])
     @test removed(d) == added(d) == []
+
+    d = deepdiff([NaN], [])
+    @test d == d
 end

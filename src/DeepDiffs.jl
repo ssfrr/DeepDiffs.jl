@@ -6,7 +6,7 @@ export SimpleDiff, VectorDiff, StringDiff, DictDiff
 # Helper function for comparing two instances of a type for equality by field
 function fieldequal(x::T, y::T) where T
     for f in fieldnames(T)
-        getfield(x, f) == getfield(y, f) || return false
+        isequal(getfield(x, f), getfield(y, f)) || return false
     end
     true
 end
