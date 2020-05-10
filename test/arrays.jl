@@ -44,4 +44,10 @@
     d = deepdiff(a1, [2, 4])
     @test removed(d) == [1, 3]
     @test added(d) == []
+
+    d = deepdiff([NaN], [NaN])
+    @test removed(d) == added(d) == []
+
+    d = deepdiff([missing], [missing])
+    @test removed(d) == added(d) == []
 end
