@@ -13,7 +13,7 @@ changed(diff::VectorDiff) = Int[]
 
 Base.:(==)(d1::VectorDiff, d2::VectorDiff) = fieldequal(d1, d2)
 
-_argmax(x, y) = x ≥ y ? (x, :X) : (y, :Y)
+_argmax(x, y) = x ≥ y ? (x, (0, 1)) : (y, (1, 0))
 
 # diffing an array is an application of the Longest Common Subsequence problem:
 # https://en.wikipedia.org/wiki/Longest_common_subsequence_problem
@@ -23,16 +23,16 @@ function deepdiff(X::Vector, Y::Vector)
     # substrings.
 
     lengths = zeros(Int, length(X)+1, length(Y)+1)
-    backtracks = fill(:nothing, axes(lengths))
-    backtracks[1,2:end] .= :X
-    backtracks[2:end,1] .= :Y
-    backtracks[1,1] = :nothing
+    backtracks = fill((0, 0), axes(lengths))
+    backtracks[1,2:end] .= Ref((0, 1))
+    backtracks[2:end,1] .= Ref((1, 0))
+    backtracks[1,1] = (0, 0)
 
     for (j, v2) in enumerate(Y)
         for (i, v1) in enumerate(X)
             if isequal(v1, v2)
                 lengths[i+1, j+1] = lengths[i, j] + 1
-                backtracks[i+1, j+1] = :XY
+                backtracks[i+1, j+1] = (1, 1)
             else
                 (lengths[i+1, j+1], backtracks[i+1, j+1]) = _argmax(lengths[i+1, j], lengths[i, j+1])
             end
@@ -50,12 +50,12 @@ end
 # recursively trace back the longest common subsequence, adding items
 # to the added and removed lists as we go
 function backtrack(lengths, backtracks, removed, added, X, Y, i, j)
-    if backtracks[i+1, j+1] == :XY
+    if backtracks[i+1, j+1] == (1, 1)
         backtrack(lengths, backtracks, removed, added, X, Y, i-1, j-1)
-    elseif backtracks[i+1, j+1] == :X
+    elseif backtracks[i+1, j+1] == (0, 1)
         backtrack(lengths, backtracks, removed, added, X, Y, i, j-1)
         push!(added, j)
-    elseif backtracks[i+1, j+1] == :Y
+    elseif backtracks[i+1, j+1] == (1, 0)
         backtrack(lengths, backtracks, removed, added, X, Y, i-1, j)
         push!(removed, i)
     end
