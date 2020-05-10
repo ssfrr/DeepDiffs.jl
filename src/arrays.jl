@@ -50,13 +50,14 @@ end
 # recursively trace back the longest common subsequence, adding items
 # to the added and removed lists as we go
 function backtrack(lengths, backtracks, removed, added, X, Y, i, j)
-    if backtracks[i+1, j+1] == (1, 1)
-        backtrack(lengths, backtracks, removed, added, X, Y, i-1, j-1)
-    elseif backtracks[i+1, j+1] == (0, 1)
-        backtrack(lengths, backtracks, removed, added, X, Y, i, j-1)
+    bt = backtracks[i+1, j+1]
+    if bt == (1, 1)
+        backtrack(lengths, backtracks, removed, added, X, Y, ((i, j) .- bt)...)
+    elseif bt == (0, 1)
+        backtrack(lengths, backtracks, removed, added, X, Y, ((i, j) .- bt)...)
         push!(added, j)
-    elseif backtracks[i+1, j+1] == (1, 0)
-        backtrack(lengths, backtracks, removed, added, X, Y, i-1, j)
+    elseif bt == (1, 0)
+        backtrack(lengths, backtracks, removed, added, X, Y, ((i, j) .- bt)...)
         push!(removed, i)
     end
 end
