@@ -24,6 +24,9 @@ function deepdiff(X::Vector, Y::Vector)
 
     lengths = zeros(Int, length(X)+1, length(Y)+1)
     backtracks = fill(:nothing, axes(lengths))
+    backtracks[1,2:end] .= :X
+    backtracks[2:end,1] .= :Y
+    backtracks[1,1] = :nothing
 
     for (j, v2) in enumerate(Y)
         for (i, v1) in enumerate(X)
@@ -47,12 +50,12 @@ end
 # recursively trace back the longest common subsequence, adding items
 # to the added and removed lists as we go
 function backtrack(lengths, backtracks, removed, added, X, Y, i, j)
-    if i > 0 && j > 0 && backtracks[i+1, j+1] == :XY
+    if backtracks[i+1, j+1] == :XY
         backtrack(lengths, backtracks, removed, added, X, Y, i-1, j-1)
-    elseif j > 0 && (i == 0 || backtracks[i+1, j+1] == :X)
+    elseif backtracks[i+1, j+1] == :X
         backtrack(lengths, backtracks, removed, added, X, Y, i, j-1)
         push!(added, j)
-    elseif i > 0 && (j == 0 ||  backtracks[i+1, j+1] == :Y)
+    elseif backtracks[i+1, j+1] == :Y
         backtrack(lengths, backtracks, removed, added, X, Y, i-1, j)
         push!(removed, i)
     end
