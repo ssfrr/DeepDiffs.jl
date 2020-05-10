@@ -23,15 +23,15 @@ function deepdiff(X::Vector, Y::Vector)
     # substrings.
 
     lengths = zeros(Int, length(X)+1, length(Y)+1)
-    backtracks = fill(:nothing, length(X), length(Y))
+    backtracks = fill(:nothing, axes(lengths))
 
     for (j, v2) in enumerate(Y)
         for (i, v1) in enumerate(X)
             if isequal(v1, v2)
                 lengths[i+1, j+1] = lengths[i, j] + 1
-                backtracks[i, j] = :XY
+                backtracks[i+1, j+1] = :XY
             else
-                (lengths[i+1, j+1], backtracks[i, j]) = _argmax(lengths[i+1, j], lengths[i, j+1])
+                (lengths[i+1, j+1], backtracks[i+1, j+1]) = _argmax(lengths[i+1, j], lengths[i, j+1])
             end
         end
     end
@@ -47,12 +47,12 @@ end
 # recursively trace back the longest common subsequence, adding items
 # to the added and removed lists as we go
 function backtrack(lengths, backtracks, removed, added, X, Y, i, j)
-    if i > 0 && j > 0 && backtracks[i, j] == :XY
+    if i > 0 && j > 0 && backtracks[i+1, j+1] == :XY
         backtrack(lengths, backtracks, removed, added, X, Y, i-1, j-1)
-    elseif j > 0 && (i == 0 || backtracks[i, j] == :X)
+    elseif j > 0 && (i == 0 || backtracks[i+1, j+1] == :X)
         backtrack(lengths, backtracks, removed, added, X, Y, i, j-1)
         push!(added, j)
-    elseif i > 0 && (j == 0 ||  backtracks[i, j] == :Y)
+    elseif i > 0 && (j == 0 ||  backtracks[i+1, j+1] == :Y)
         backtrack(lengths, backtracks, removed, added, X, Y, i-1, j)
         push!(removed, i)
     end
