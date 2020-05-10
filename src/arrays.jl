@@ -21,13 +21,20 @@ function deepdiff(X::Vector, Y::Vector)
     # substrings.
 
     lengths = zeros(Int, length(X)+1, length(Y)+1)
+    backtracks = fill(:nothing, axes(lengths))
 
     for (j, v2) in enumerate(Y)
         for (i, v1) in enumerate(X)
             if isequal(v1, v2)
                 lengths[i+1, j+1] = lengths[i, j] + 1
+                backtracks[i+1, j+1] = :XY
             else
-                lengths[i+1, j+1] = max(lengths[i+1, j], lengths[i, j+1])
+                (lengths[i+1, j+1], backtracks[i+1, j+1]) =
+                    if lengths[i+1, j] ≥ lengths[i, j+1]
+                        (lengths[i+1, j], :X)
+                    else
+                        (lengths[i, j+1], :Y)
+                    end
             end
         end
     end
