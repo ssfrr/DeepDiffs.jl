@@ -24,7 +24,7 @@ function deepdiff(X::Vector, Y::Vector)
 
     for (j, v2) in enumerate(Y)
         for (i, v1) in enumerate(X)
-            if v1 == v2
+            if isequal(v1, v2)
                 lengths[i+1, j+1] = lengths[i, j] + 1
             else
                 lengths[i+1, j+1] = max(lengths[i+1, j], lengths[i, j+1])
@@ -42,7 +42,7 @@ end
 # recursively trace back the longest common subsequence, adding items
 # to the added and removed lists as we go
 function backtrack(lengths, removed, added, X, Y, i, j)
-    if i > 0 && j > 0 && X[i] == Y[j]
+    if i > 0 && j > 0 && isequal(X[i], Y[j])
         backtrack(lengths, removed, added, X, Y, i-1, j-1)
     elseif j > 0 && (i == 0 || lengths[i+1, j] ≥ lengths[i, j+1])
         backtrack(lengths, removed, added, X, Y, i, j-1)
