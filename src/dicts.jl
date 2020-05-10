@@ -26,7 +26,7 @@ function deepdiff(X::AbstractDict, Y::AbstractDict)
     changed = Dict{eltype(bothkeys), DeepDiff}()
 
     for key in bothkeys
-        if X[key] != Y[key]
+        if !isequal(X[key], Y[key])
             changed[key] = deepdiff(X[key], Y[key])
         else
             push!(unchanged, key)
