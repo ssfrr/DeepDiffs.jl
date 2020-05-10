@@ -42,17 +42,17 @@ function deepdiff(X::Vector, Y::Vector)
     removed = Int[]
     added = Int[]
 
-    backtrack(lengths, backtracks, removed, added, X, Y, length(X), length(Y))
+    backtrack(backtracks, removed, added, length(X), length(Y))
 
     VectorDiff(X, Y, removed, added)
 end
 
 # recursively trace back the longest common subsequence, adding items
 # to the added and removed lists as we go
-function backtrack(lengths, backtracks, removed, added, X, Y, i, j)
+function backtrack(backtracks, removed, added, i, j)
     bt = backtracks[i+1, j+1]
     if bt != (0, 0)
-        backtrack(lengths, backtracks, removed, added, X, Y, ((i, j) .- bt)...)
+        backtrack(backtracks, removed, added, ((i, j) .- bt)...)
     end
 
     if bt == (0, 1)
