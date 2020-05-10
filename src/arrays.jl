@@ -13,6 +13,8 @@ changed(diff::VectorDiff) = Int[]
 
 Base.:(==)(d1::VectorDiff, d2::VectorDiff) = fieldequal(d1, d2)
 
+_argmax(x, y) = x ≥ y ? (x, :X) : (y, :Y)
+
 # diffing an array is an application of the Longest Common Subsequence problem:
 # https://en.wikipedia.org/wiki/Longest_common_subsequence_problem
 function deepdiff(X::Vector, Y::Vector)
@@ -29,12 +31,7 @@ function deepdiff(X::Vector, Y::Vector)
                 lengths[i+1, j+1] = lengths[i, j] + 1
                 backtracks[i+1, j+1] = :XY
             else
-                (lengths[i+1, j+1], backtracks[i+1, j+1]) =
-                    if lengths[i+1, j] ≥ lengths[i, j+1]
-                        (lengths[i+1, j], :X)
-                    else
-                        (lengths[i, j+1], :Y)
-                    end
+                (lengths[i+1, j+1], backtracks[i+1, j+1]) = _argmax(lengths[i+1, j], lengths[i, j+1])
             end
         end
     end
