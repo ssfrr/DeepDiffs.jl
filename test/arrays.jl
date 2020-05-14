@@ -53,4 +53,8 @@
 
     d = deepdiff([NaN], [])
     @test d == d
+
+    d = deepdiff([0.0], [-0.0])
+    @test removed(d) == [1]
+    @test added(d) == [1]
 end
