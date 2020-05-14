@@ -88,22 +88,22 @@
     end
 
     @testset "missing/NaN" begin
-        dnan = Dict(:d=>NaN)
+        dnan = Dict(:d => NaN)
         d = deepdiff(dnan, dnan)
         @test added(d) == removed(d) == Set()
         @test changed(d) == Dict()
 
-        dmis = Dict(:d=>missing)
+        dmis = Dict(:d => missing)
         d = deepdiff(dmis, dmis)
         @test added(d) == removed(d) == Set()
         @test changed(d) == Dict()
 
-        dnank = Dict(NaN=>true)
+        dnank = Dict(NaN => true)
         d = deepdiff(dnan, dnan)
         @test added(d) == removed(d) == Set()
         @test changed(d) == Dict()
 
-        dmisk = Dict(missing=>true)
+        dmisk = Dict(missing => true)
         d = deepdiff(dmis, dmis)
         @test added(d) == removed(d) == Set()
         @test changed(d) == Dict()
