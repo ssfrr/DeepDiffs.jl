@@ -34,7 +34,7 @@ function deepdiff(X::Vector, Y::Vector)
                 lengths[i+1, j+1] = lengths[i, j] + 1
                 backtracks[i+1, j+1] = (1, 1)
             else
-                (lengths[i+1, j+1], backtracks[i+1, j+1]) = _argmax(lengths[i+1, j], lengths[i, j+1])
+                lengths[i+1, j+1], backtracks[i+1, j+1] = _argmax(lengths[i+1, j], lengths[i, j+1])
             end
         end
     end
