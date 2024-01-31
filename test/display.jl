@@ -32,18 +32,18 @@
         expected2 = """[[31m1[39m[31m, [39m[32m2[39m]"""
         @testset "Color Diffs" begin
             display(TextDisplay(buf), d1)
-            @test String(take!(buf.io)) == expected1
+            @test strip(String(take!(buf.io))) == expected1
             display(TextDisplay(buf), d2)
-            @test String(take!(buf.io)) == expected2
+            @test strip(String(take!(buf.io))) == expected2
         end
 
         buf = setcolor(false)
         @testset "No-Color Diffs" begin
             display(TextDisplay(buf), d1)
-            @test String(take!(buf.io)) == """
+            @test strip(strip(String(take!(buf.io)))) == """
                 [(+)2, (+)3, (+)4, 1, 2, (-)7, 3, (+)5]"""
             display(TextDisplay(buf), d2)
-            @test String(take!(buf.io)) == """
+            @test strip(strip(String(take!(buf.io)))) == """
                 [(-)1, (+)2]"""
         end
 
@@ -110,7 +110,7 @@
             # This test is broken because the specifics of how the ANSI color
             # codes are printed change based on the order, which changes with
             # different julia versions.
-            @test_skip String(take!(buf.io)) == expected
+            @test_skip strip(String(take!(buf.io))) == expected
         end
         @testset "No-Color Diffs" begin
             buf = setcolor(false)
@@ -134,7 +134,7 @@
                  ),
             +    :e => "e",
             )"""
-            checkdictprint(String(take!(buf.io)), expected)
+            checkdictprint(strip(String(take!(buf.io))), expected)
         end
 
         resetcolor()
@@ -145,7 +145,7 @@
         diff = deepdiff("abc", "adb")
         buf = setcolor(false)
         display(TextDisplay(buf), diff)
-        @test String(take!(buf.io)) == "\"a{+d+}b{-c-}\""
+        @test strip(String(take!(buf.io))) == "\"a{+d+}b{-c-}\""
         resetcolor()
     end
 
@@ -173,12 +173,12 @@
           multiline
           output\"\"\""""
         display(TextDisplay(buf), diff)
-        @test String(take!(buf.io)) == expected
+        @test strip(String(take!(buf.io))) == expected
     end
     @testset "No-Color Display" begin
         buf = setcolor(false)
         display(TextDisplay(buf), diff)
-        @test String(take!(buf.io)) == """
+        @test strip(String(take!(buf.io))) == """
         \"\"\"
           differences can
         - be hard to find
