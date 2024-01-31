@@ -1,9 +1,10 @@
 name = "DeepDiffs"
 uuid = "ab62b9b5-e342-54a8-a765-a90f495de1a6"
+authors = ["Spencer Russell"]
 keywords = ["diff"]
 license = "MIT"
 desc = "Compute and pretty-print diffs for data structures like arrays and dictionaries"
-version = "1.2.0"
+version = "1.2.1"
 
 [compat]
 julia = "1.6"
