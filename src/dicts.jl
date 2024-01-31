@@ -23,7 +23,7 @@ function deepdiff(X::AbstractDict, Y::AbstractDict)
     removed = setdiff(xkeys, ykeys)
     added = setdiff(ykeys, xkeys)
     unchanged = Set{eltype(xkeys)}()
-    changed = Dict{eltype(bothkeys), DeepDiff}()
+    changed = Dict{Union{eltype(xkeys), eltype(ykeys)}, DeepDiff}()
 
     for key in bothkeys
         if !isequal(X[key], Y[key])
