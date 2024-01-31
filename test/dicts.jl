@@ -99,16 +99,16 @@
         @test changed(d) == Dict()
 
         dnank = Dict(NaN => true)
-        d = deepdiff(dnan, dnan)
+        d = deepdiff(dnank, dnank)
         @test added(d) == removed(d) == Set()
         @test changed(d) == Dict()
 
         dmisk = Dict(missing => true)
-        d = deepdiff(dmis, dmis)
+        d = deepdiff(dmisk, dmisk)
         @test added(d) == removed(d) == Set()
         @test changed(d) == Dict()
 
-        d = DeepDiffs.deepdiff(dnank, dmisk)
+        d = deepdiff(dnank, dmisk)
         @test d == d
 
     end
