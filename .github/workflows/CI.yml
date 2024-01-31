@@ -30,14 +30,18 @@ jobs:
         arch:
           - x64
           - x86
+        # only test 32bit on linux
+        exclude:
+          - os: macos-latest
+            arch: x86
+          - os: windows-latest
+            arch: x86
     steps:
       - uses: actions/checkout@v3
       - uses: julia-actions/setup-julia@v1
         with:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
-        # only test 32bit on linux
-        if: ${{ matrix.os }} == "ubuntu-latest" || ${{ matrix.arch }} ==  "x64"
       - uses: julia-actions/cache@v1
       - uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-runtest@v1
