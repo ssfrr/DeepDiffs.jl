@@ -35,7 +35,8 @@ changed(diff::AllStringDiffs) = []
 
 Base.:(==)(d1::T, d2::T) where {T<:AllStringDiffs} = fieldequal(d1, d2)
 
-escape_diff_line(str::AbstractString) = escape_string(str, ('$'); keep=('\"'))
+escape_diff(str::AbstractString) = escape_string(str, ('$'); keep=('\"'))
+escape_diff(char::AbstractChar) = escape_string(string(char), ('$', '\"'))
 
 function Base.show(io::IO, diff::StringLineDiff)
     xlines = split(diff.before, '\n')
@@ -43,11 +44,11 @@ function Base.show(io::IO, diff::StringLineDiff)
     println(io, "\"\"\"")
     visitall(diff.diff) do idx, state, last
         if state == :removed
-            printstyled(io, "- ", escape_diff_line(xlines[idx]), color=:red)
+            printstyled(io, "- ", escape_diff(xlines[idx]), color=:red)
         elseif state == :added
-            printstyled(io, "+ ", escape_diff_line(ylines[idx]), color=:green)
+            printstyled(io, "+ ", escape_diff(ylines[idx]), color=:green)
         else
-            print(io, "  ", escape_diff_line(xlines[idx]))
+            print(io, "  ", escape_diff(xlines[idx]))
         end
         if last
             print(io, "\"\"\"")
@@ -79,11 +80,11 @@ function Base.show(io::IO, diff::StringDiff)
             end
         end
         if state == :removed
-            printstyled(io, string(xchars[idx]), color=:red)
+            printstyled(io, escape_diff(xchars[idx]), color=:red)
         elseif state == :added
-            printstyled(io, string(ychars[idx]), color=:green)
+            printstyled(io, escape_diff(ychars[idx]), color=:green)
         else
-            print(io, xchars[idx])
+            print(io, escape_diff(xchars[idx]))
         end
         laststate = state
     end

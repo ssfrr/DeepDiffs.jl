@@ -146,6 +146,11 @@
         buf = setcolor(false)
         display(TextDisplay(buf), diff)
         @test strip(String(take!(buf.io))) == "\"a{+d+}b{-c-}\""
+
+        diff = deepdiff("a\0\"\$b", "a\"\$b")
+        buf = setcolor(false)
+        display(TextDisplay(buf), diff)
+        @test strip(String(take!(buf.io))) == raw"\"a{-\0-}\\\"\$b\""
         resetcolor()
     end
 
