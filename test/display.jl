@@ -147,10 +147,10 @@
         display(TextDisplay(buf), diff)
         @test strip(String(take!(buf.io))) == "\"a{+d+}b{-c-}\""
 
-        diff = deepdiff("a\0\"\$b", "a\"\$b")
+        diff = deepdiff("a\0\"b", "a\"\$b")
         buf = setcolor(false)
         display(TextDisplay(buf), diff)
-        @test strip(String(take!(buf.io))) == raw"\"a{-\0-}\\\"\$b\""
+        @test strip(String(take!(buf.io))) == raw"\"a{-\0-}\\\"{+\$+}b\""
         resetcolor()
     end
 
@@ -159,12 +159,12 @@
         differences can
         be "hard" to find
         \$in
-        \tmultiline\0
+        \tmultiline
         output"""
     s2 = """
         differences can
         be hurd to find
-        multiline
+        multiline\0
         output"""
     diff = deepdiff(s1, s2)
     @testset "Color Display" begin
@@ -174,9 +174,9 @@
           differences can
         [31m- be "hard" to find[39m
         [31m- \$in[39m
-        [31m- \tmultiline\0[39m
+        [31m- \tmultiline[39m
         [32m+ be hurd to find[39m
-        [32m+ multiline[39m
+        [32m+ multiline\0[39m
           output\"\"\""""
         display(TextDisplay(buf), diff)
         @test strip(String(take!(buf.io))) == expected
@@ -189,9 +189,9 @@
           differences can
         - be "hard" to find
         - \$in
-        - \tmultiline\0
+        - \tmultiline
         + be hurd to find
-        + multiline
+        + multiline\0
           output\"\"\""""
     end
     resetcolor()
