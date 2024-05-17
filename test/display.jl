@@ -150,11 +150,11 @@
     end
 
     @testset "Multi-line strings display correctly" begin
-    s1 = raw"""
+    s1 = """
         differences can
         be "hard" to find
-        $in
-        multiline
+        \$in
+        \tmultiline\0
         output"""
     s2 = """
         differences can
@@ -165,12 +165,13 @@
     @testset "Color Display" begin
         buf = setcolor(true)
         expected = raw"""
-        raw\"\"\"
+        \"\"\"
           differences can
         [31m- be "hard" to find[39m
-        [31m- $in[39m
+        [31m- \$in[39m
+        [31m- \tmultiline\0[39m
         [32m+ be hurd to find[39m
-          multiline
+        [32m+ multiline[39m
           output\"\"\""""
         display(TextDisplay(buf), diff)
         @test strip(String(take!(buf.io))) == expected
@@ -179,12 +180,13 @@
         buf = setcolor(false)
         display(TextDisplay(buf), diff)
         @test strip(String(take!(buf.io))) == raw"""
-        raw\"\"\"
+        \"\"\"
           differences can
         - be "hard" to find
-        - $in
+        - \$in
+        - \tmultiline\0
         + be hurd to find
-          multiline
+        + multiline
           output\"\"\""""
     end
     resetcolor()

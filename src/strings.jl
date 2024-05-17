@@ -35,17 +35,19 @@ changed(diff::AllStringDiffs) = []
 
 Base.:(==)(d1::T, d2::T) where {T<:AllStringDiffs} = fieldequal(d1, d2)
 
+escape_diff_line(str::AbstractString) = escape_string(str, ('$'); keep=('\"'))
+
 function Base.show(io::IO, diff::StringLineDiff)
     xlines = split(diff.before, '\n')
     ylines = split(diff.after, '\n')
-    println(io, "raw\"\"\"")
+    println(io, "\"\"\"")
     visitall(diff.diff) do idx, state, last
         if state == :removed
-            printstyled(io, "- ", xlines[idx], color=:red)
+            printstyled(io, "- ", escape_diff_line(xlines[idx]), color=:red)
         elseif state == :added
-            printstyled(io, "+ ", ylines[idx], color=:green)
+            printstyled(io, "+ ", escape_diff_line(ylines[idx]), color=:green)
         else
-            print(io, "  ", xlines[idx])
+            print(io, "  ", escape_diff_line(xlines[idx]))
         end
         if last
             print(io, "\"\"\"")
