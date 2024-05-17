@@ -146,31 +146,37 @@
         buf = setcolor(false)
         display(TextDisplay(buf), diff)
         @test strip(String(take!(buf.io))) == "\"a{+d+}b{-c-}\""
+
+        diff = deepdiff("a\0\"b", "a\"\$b")
+        buf = setcolor(false)
+        display(TextDisplay(buf), diff)
+        @test strip(String(take!(buf.io))) == raw"\"a{-\0-}\\\"{+\$+}b\""
         resetcolor()
     end
 
     @testset "Multi-line strings display correctly" begin
     s1 = """
         differences can
-        be hard to find
-        in
-        multiline
+        be "hard" to find
+        \$in
+        \tmultiline
         output"""
     s2 = """
         differences can
         be hurd to find
-        multiline
+        multiline\0
         output"""
     diff = deepdiff(s1, s2)
     @testset "Color Display" begin
         buf = setcolor(true)
-        expected = """
+        expected = raw"""
         \"\"\"
           differences can
-        [31m- be hard to find[39m
-        [31m- in[39m
+        [31m- be "hard" to find[39m
+        [31m- \$in[39m
+        [31m- \tmultiline[39m
         [32m+ be hurd to find[39m
-          multiline
+        [32m+ multiline\0[39m
           output\"\"\""""
         display(TextDisplay(buf), diff)
         @test strip(String(take!(buf.io))) == expected
@@ -178,13 +184,14 @@
     @testset "No-Color Display" begin
         buf = setcolor(false)
         display(TextDisplay(buf), diff)
-        @test strip(String(take!(buf.io))) == """
+        @test strip(String(take!(buf.io))) == raw"""
         \"\"\"
           differences can
-        - be hard to find
-        - in
+        - be "hard" to find
+        - \$in
+        - \tmultiline
         + be hurd to find
-          multiline
+        + multiline\0
           output\"\"\""""
     end
     resetcolor()
