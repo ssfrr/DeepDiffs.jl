@@ -35,7 +35,7 @@ changed(diff::AllStringDiffs) = []
 
 Base.:(==)(d1::T, d2::T) where {T<:AllStringDiffs} = fieldequal(d1, d2)
 
-escape_diff(str::AbstractString) = escape_string(str, ('$'); keep=('\"'))
+escape_diff(str::AbstractString) = escape_string(str, ('$',))
 escape_diff(char::AbstractChar) = escape_string(string(char), ('$', '\"'))
 
 function Base.show(io::IO, diff::StringLineDiff)
