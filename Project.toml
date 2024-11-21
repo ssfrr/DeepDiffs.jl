@@ -4,7 +4,7 @@ authors = ["Spencer Russell"]
 keywords = ["diff"]
 license = "MIT"
 desc = "Compute and pretty-print diffs for data structures like arrays and dictionaries"
-version = "1.2.1"
+version = "1.2.2"
 
 [compat]
 julia = "1.6"
