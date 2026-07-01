@@ -37,11 +37,13 @@ jobs:
         exclude:
           - os: macos-latest
             arch: x86
+          - os: macos-latest
+            arch: x64            
           - os: windows-latest
             arch: x86
     steps:
       - uses: actions/checkout@v7
-      - uses: julia-actions/setup-julia@v2
+      - uses: julia-actions/setup-julia@v3
         with:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
